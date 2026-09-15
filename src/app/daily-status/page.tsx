@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
@@ -128,8 +129,16 @@ ${input.trim()}`;
       icon="ClipboardList"
       color="from-blue-500 to-cyan-600"
     >
-      {/* Full-height two-column split */}
-      <div className="h-full flex flex-col md:flex-row gap-4 -m-6 p-6 min-h-0">
+      <div className="relative h-full flex flex-col md:flex-row gap-4 -m-6 p-6 min-h-0">
+        {/* Ambient background glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 overflow-hidden -z-10"
+        >
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 blur-3xl opacity-[0.15] dark:opacity-[0.12]" />
+          <div className="absolute -bottom-32 -left-16 w-72 h-72 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-600 blur-3xl opacity-[0.08] dark:opacity-[0.07]" />
+        </div>
+
         {/* ── Left: Input ── */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
           {/* Panel header */}
@@ -174,8 +183,13 @@ ${input.trim()}`;
             )}
           </div>
 
-          {/* Textarea fills remaining height */}
-          <div className="flex-1 flex flex-col min-h-0 rounded-xl border border-border bg-surface-raised shadow-sm overflow-hidden">
+          {/* Textarea card */}
+          <div
+            className={clsx(
+              "flex-1 flex flex-col min-h-0 rounded-xl border border-border bg-surface-raised shadow-sm overflow-hidden transition-colors duration-200",
+              "focus-within:ring-2 focus-within:ring-blue-400/30 focus-within:border-blue-400/50"
+            )}
+          >
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -183,9 +197,8 @@ ${input.trim()}`;
               className="flex-1 w-full px-4 py-3.5 text-xs font-mono text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
               spellCheck={false}
             />
-            {/* Footer bar */}
             <div className="flex items-center justify-between px-4 py-2.5 border-t border-border-subtle bg-surface-sunken/60">
-              <span className="text-xs text-text-muted tabular-nums">
+              <span className="text-xs text-text-muted tabular-nums truncate min-w-0">
                 {input.trim() ? `${input.trim().split("\n").length} lines` : ""}
               </span>
               <Button
@@ -193,6 +206,7 @@ ${input.trim()}`;
                 loading={loading}
                 disabled={!input.trim() || loading}
                 size="sm"
+                className="shadow-sm bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shrink-0"
               >
                 {loading ? "Formatting…" : "Format Status"}
               </Button>
@@ -207,9 +221,9 @@ ${input.trim()}`;
               <h2 className="text-sm font-semibold text-text-primary">
                 Formatted Status
               </h2>
-              <div className="mt-0.5">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {hasOutput ? (
-                  <ProviderBadge provider={data.provider} model={data.model} />
+                  <ProviderBadge provider={data!.provider} model={data!.model} />
                 ) : (
                   <p className="text-xs text-text-muted">Output will appear here</p>
                 )}
@@ -221,46 +235,65 @@ ${input.trim()}`;
                   <RefreshCw className="w-3.5 h-3.5" />
                   Regenerate
                 </Button>
-                <CopyButton text={data.text} />
+                <CopyButton text={data!.text} />
               </div>
             )}
           </div>
 
           <div
             className={clsx(
-              "flex-1 min-h-0 rounded-xl border shadow-sm overflow-hidden",
+              "relative flex-1 min-h-0 rounded-xl border shadow-sm overflow-hidden transition-shadow duration-300",
               hasOutput
-                ? "border-border bg-surface-raised"
-                : "border-dashed border-border bg-surface-sunken/50",
+                ? "border-border bg-surface-raised ring-1 ring-blue-400/20 shadow-[0_0_24px_-8px_rgba(59,130,246,0.35)]"
+                : "border-dashed border-border bg-surface-sunken/50"
             )}
           >
             {/* Error state */}
             {error && (
               <div className="flex items-start gap-2.5 m-4 p-3 rounded-lg bg-danger-subtle border border-danger/30">
-                <span className="text-danger text-xs font-medium mt-0.5">
+                <span className="text-danger text-xs font-medium mt-0.5 shrink-0">
                   Error
                 </span>
-                <p className="text-xs text-danger">
-                  {error}
-                </p>
+                <p className="text-xs text-danger">{error}</p>
               </div>
             )}
 
-            {/* Loading skeleton */}
-            {loading && <SkeletonLines lines={6} className="p-5" />}
+            {/* Loading state */}
+            {loading && (
+              <div className="h-full p-5">
+                <div className="flex items-center gap-2 mb-4 text-xs font-medium text-accent">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                  Thinking…
+                </div>
+                <SkeletonLines lines={6} />
+              </div>
+            )}
 
             {/* Output text */}
-            {!loading && hasOutput && (
-              <pre className="h-full px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
-                {data.text}
-              </pre>
-            )}
+            <AnimatePresence initial={false}>
+              {!loading && hasOutput && (
+                <motion.div
+                  key="content"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="h-full"
+                >
+                  <pre className="h-full px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
+                    {data!.text}
+                  </pre>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Empty state */}
             {!loading && !hasOutput && !error && (
               <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-8">
-                <div className="w-9 h-9 rounded-full bg-surface-sunken flex items-center justify-center">
-                  <EmptyIcon className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
+                <div className="w-11 h-11 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                  <EmptyIcon className="w-5 h-5 text-blue-500" strokeWidth={1.5} />
                 </div>
                 <p className="text-sm text-text-muted">
                   Paste your notes and click Format Status

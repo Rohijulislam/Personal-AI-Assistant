@@ -2,14 +2,30 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
-import { Button } from "@/components/ui/Button";
-import { CopyButton } from "@/components/ui/CopyButton";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
+import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
+import { GlassPanel } from "@/components/tools/GlassPanel";
+import { ToolActionButton } from "@/components/tools/ToolActionButton";
+import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { clsx } from "clsx";
-import { RefreshCw, PenLine as EmptyIcon } from "lucide-react";
+import {
+  Users,
+  UserCog,
+  UsersRound,
+  Briefcase,
+  MessageCircleMore,
+  Scissors,
+  Heart,
+  RefreshCw,
+  Sparkles,
+  PenLine as EmptyIcon,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { GenerateOptions } from "@/lib/ai";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -17,59 +33,19 @@ import type { GenerateOptions } from "@/lib/ai";
 type Audience = "client" | "manager" | "team";
 type Tone = "professional" | "explain" | "clean" | "humanized";
 
-interface AudienceOption {
-  id: Audience;
-  label: string;
-  description: string;
-}
-
-interface ToneOption {
-  id: Tone;
-  label: string;
-  description: string;
-}
-
 // ── Config ───────────────────────────────────────────────────────────────────
 
-const AUDIENCE_OPTIONS: AudienceOption[] = [
-  {
-    id: "client",
-    label: "Client",
-    description: "External — polished, no jargon",
-  },
-  {
-    id: "manager",
-    label: "Manager",
-    description: "Internal — clear, concise, outcome-focused",
-  },
-  {
-    id: "team",
-    label: "Team",
-    description: "Peers — casual but precise",
-  },
+const AUDIENCE_OPTIONS: { id: Audience; label: string; icon: LucideIcon }[] = [
+  { id: "client", label: "Client", icon: Briefcase },
+  { id: "manager", label: "Manager", icon: UserCog },
+  { id: "team", label: "Team", icon: UsersRound },
 ];
 
-const TONE_OPTIONS: ToneOption[] = [
-  {
-    id: "professional",
-    label: "Professional",
-    description: "Polished, confident, client-ready",
-  },
-  {
-    id: "explain",
-    label: "Explain & Detail",
-    description: "Clearly explains the core issue with context",
-  },
-  {
-    id: "clean",
-    label: "Clean & Production",
-    description: "Tightened, no fluff, ready to ship or send",
-  },
-  {
-    id: "humanized",
-    label: "Humanized",
-    description: "Warm, natural — sounds like a real person wrote it",
-  },
+const TONE_OPTIONS: { id: Tone; label: string; icon: LucideIcon }[] = [
+  { id: "professional", label: "Professional", icon: Users },
+  { id: "explain", label: "Explain & Detail", icon: MessageCircleMore },
+  { id: "clean", label: "Clean & Production", icon: Scissors },
+  { id: "humanized", label: "Humanized", icon: Heart },
 ];
 
 // ── System prompt builder ────────────────────────────────────────────────────
@@ -178,85 +154,47 @@ export default function TextRefinerPage() {
       icon="PenLine"
       color="from-emerald-500 to-teal-600"
     >
-      <div className="h-full flex flex-col lg:flex-row gap-4 -m-6 p-6 min-h-0">
-        {/* ── Left: Input + Options ── */}
-        <div className="flex flex-col lg:w-[45%] shrink-0 min-h-0 gap-3">
-          {/* Audience */}
-          <div>
-            <p className="text-xs font-medium text-text-muted mb-1.5 uppercase tracking-wide">
-              Audience
-            </p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {AUDIENCE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setAudience(opt.id)}
-                  className={clsx(
-                    "flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-                    audience === opt.id
-                      ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-600"
-                      : "border-border bg-surface-raised hover:border-text-muted",
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      "text-sm font-medium",
-                      audience === opt.id
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : "text-text-primary",
-                    )}
-                  >
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] text-text-muted leading-tight mt-0.5">
-                    {opt.description}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
+        <ToolMeshBackground colors={["bg-emerald-400", "bg-teal-400", "bg-lime-300"]} />
 
-          {/* Tone */}
-          <div>
-            <p className="text-xs font-medium text-text-muted mb-1.5 uppercase tracking-wide">
-              Tone
-            </p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {TONE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setTone(opt.id)}
-                  className={clsx(
-                    "flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-                    tone === opt.id
-                      ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-600"
-                      : "border-border bg-surface-raised hover:border-text-muted",
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      "text-sm font-medium",
-                      tone === opt.id
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : "text-text-primary",
-                    )}
-                  >
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] text-text-muted leading-tight mt-0.5">
-                    {opt.description}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Textarea */}
-          <div className="flex-1 flex flex-col min-h-0 rounded-xl border border-border bg-surface-raised shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 pt-3 pb-1">
-              <span className="text-xs font-medium text-text-muted">
-                Your rough text
+        <div className="max-w-4xl mx-auto flex flex-col gap-4">
+          {/* Toolbar */}
+          <GlassPanel className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                To
               </span>
+              <SegmentedControl
+                options={AUDIENCE_OPTIONS}
+                value={audience}
+                onChange={setAudience}
+                layoutId="tr-audience-segment"
+                activeGradient="from-emerald-500 to-teal-500"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                Tone
+              </span>
+              <SegmentedControl
+                options={TONE_OPTIONS}
+                value={tone}
+                onChange={setTone}
+                layoutId="tr-tone-segment"
+                activeGradient="from-emerald-500 to-teal-500"
+              />
+            </div>
+          </GlassPanel>
+
+          {/* Draft */}
+          <GlassPanel className="overflow-hidden opacity-90">
+            <div className="flex items-center justify-between px-5 pt-4 pb-1">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-text-muted" />
+                <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Draft
+                </span>
+              </div>
               {input && (
                 <button
                   onClick={handleClear}
@@ -271,103 +209,94 @@ export default function TextRefinerPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste or type the text you want to refine…"
-              className="flex-1 w-full px-4 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
+              rows={5}
+              className="w-full px-5 py-2 text-sm text-text-secondary placeholder-text-muted bg-transparent resize-none focus:outline-none"
               spellCheck={false}
             />
-            <div className="flex items-center justify-between px-4 py-2.5 border-t border-border-subtle bg-surface-sunken/60">
-              <span className="text-xs text-text-muted tabular-nums">
-                {input.trim() ? `${input.trim().length} chars` : ""}
+            <div className="flex items-center justify-between px-5 py-3 border-t border-white/40 dark:border-white/10">
+              <span className="text-xs text-text-muted tabular-nums truncate min-w-0">
+                {input.trim() ? `${input.trim().length} chars` : " "}
               </span>
-              <Button
+              <ToolActionButton
                 onClick={handleRefine}
                 loading={loading}
                 disabled={!input.trim() || loading}
-                size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-sm"
+                icon={Sparkles}
+                gradient="from-emerald-500 to-teal-500"
+                glow="hover:shadow-emerald-500/40"
               >
                 {loading ? "Refining…" : "Refine Text"}
-              </Button>
+              </ToolActionButton>
             </div>
-          </div>
-        </div>
+          </GlassPanel>
 
-        {/* ── Right: Output ── */}
-        <div className="flex flex-col flex-1 min-w-0 min-h-0">
-          <div className="flex items-center justify-between mb-3 gap-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-text-primary">
-                Refined Text
-              </h2>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {hasOutput ? (
-                  <>
-                    <span className="text-xs text-text-muted">
-                      {AUDIENCE_OPTIONS.find((a) => a.id === audience)?.label} ·{" "}
-                      {TONE_OPTIONS.find((t) => t.id === tone)?.label}
-                    </span>
-                    <ProviderBadge provider={data.provider} model={data.model} />
-                  </>
-                ) : (
-                  <p className="text-xs text-text-muted">Ready to copy and send</p>
-                )}
+          {/* Polished */}
+          <AnimatePresence initial={false}>
+            {(loading || hasOutput || error) && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <GlassPanel
+                  className={clsx(
+                    "overflow-hidden transition-shadow duration-300",
+                    hasOutput &&
+                      "ring-1 ring-emerald-400/30 shadow-[0_0_32px_-8px_rgba(16,185,129,0.4)]"
+                  )}
+                >
+                  <div className="flex items-center justify-between px-5 pt-4 pb-1 gap-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                      <span className="text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                        Polished
+                      </span>
+                    </div>
+                    {hasOutput && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={handleRegenerate}
+                          disabled={loading}
+                          className="text-text-muted hover:text-text-primary transition-colors"
+                          title="Regenerate"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                        <CopyButton text={data!.text} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="px-5 py-3 min-h-[6rem]">
+                    {error && <p className="text-xs text-danger">{error}</p>}
+                    {loading && <SkeletonLines lines={4} />}
+                    {!loading && hasOutput && (
+                      <pre className="text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed">
+                        {data!.text}
+                      </pre>
+                    )}
+                  </div>
+
+                  {hasOutput && (
+                    <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
+                      <ProviderBadge provider={data!.provider} model={data!.model} />
+                    </div>
+                  )}
+                </GlassPanel>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {!loading && !hasOutput && !error && (
+            <GlassPanel className="flex flex-col items-center justify-center gap-2 text-center px-8 py-10 border-dashed">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <EmptyIcon className="w-4.5 h-4.5 text-emerald-500" strokeWidth={1.5} />
               </div>
-            </div>
-            {hasOutput && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Button variant="ghost" size="sm" onClick={handleRegenerate} disabled={loading}>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Regenerate
-                </Button>
-                <CopyButton text={data.text} />
-              </div>
-            )}
-          </div>
-
-          <div
-            className={clsx(
-              "flex-1 min-h-0 rounded-xl border shadow-sm overflow-hidden",
-              hasOutput
-                ? "border-border bg-surface-raised"
-                : "border-dashed border-border bg-surface-sunken/50",
-            )}
-          >
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2.5 m-4 p-3 rounded-lg bg-danger-subtle border border-danger/30">
-                <span className="text-danger text-xs font-medium mt-0.5 shrink-0">
-                  Error
-                </span>
-                <p className="text-xs text-danger">
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {/* Loading skeleton */}
-            {loading && <SkeletonLines lines={8} className="p-5" />}
-
-            {/* Output */}
-            {!loading && hasOutput && (
-              <pre className="h-full px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
-                {data.text}
-              </pre>
-            )}
-
-            {/* Empty state */}
-            {!loading && !hasOutput && !error && (
-              <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-8">
-                <div className="w-9 h-9 rounded-full bg-surface-sunken flex items-center justify-center">
-                  <EmptyIcon className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
-                </div>
-                <p className="text-sm text-text-muted">
-                  Your refined text will appear here
-                </p>
-                <p className="text-xs text-text-muted/70">
-                  Pick an audience, pick a tone, then hit Refine
-                </p>
-              </div>
-            )}
-          </div>
+              <p className="text-sm text-text-muted">
+                Pick an audience and tone, then hit Refine to see the polished version
+              </p>
+            </GlassPanel>
+          )}
         </div>
       </div>
     </PageShell>

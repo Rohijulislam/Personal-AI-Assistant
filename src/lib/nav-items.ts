@@ -1,4 +1,20 @@
-import type { NavItem } from "@/types";
+import type { NavItem, ToolId } from "@/types";
+
+export const navGroups: { label: string | null; ids: ToolId[] }[] = [
+  { label: null, ids: ["dashboard"] },
+  {
+    label: "AI Tools",
+    ids: ["daily-status", "prompt-rewriter", "text-refiner", "task-generator"],
+  },
+  {
+    label: "Library",
+    ids: ["command-library", "saved-instructions", "history"],
+  },
+  {
+    label: "Preferences",
+    ids: ["settings"],
+  },
+];
 
 export const navItems: NavItem[] = [
   {

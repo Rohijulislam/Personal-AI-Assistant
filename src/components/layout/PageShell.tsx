@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -45,6 +46,10 @@ export function PageShell({
 }: PageShellProps) {
   const Icon = iconMap[icon] ?? LayoutDashboard;
   const { setMobileNavOpen } = useAppUI();
+
+  useEffect(() => {
+    document.title = `${title} · My Assistant`;
+  }, [title]);
 
   return (
     <div className="flex flex-col h-full">

@@ -2,14 +2,29 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
-import { Button } from "@/components/ui/Button";
-import { CopyButton } from "@/components/ui/CopyButton";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
+import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
+import { GlassPanel } from "@/components/tools/GlassPanel";
+import { ToolActionButton } from "@/components/tools/ToolActionButton";
+import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { clsx } from "clsx";
-import { RefreshCw, Sparkles as EmptyIcon } from "lucide-react";
+import {
+  Sparkles,
+  Bot,
+  Globe2,
+  Zap,
+  FileText,
+  Waypoints,
+  ListTree,
+  ArrowRight,
+  RefreshCw,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { GenerateOptions } from "@/lib/ai";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -17,55 +32,19 @@ import type { GenerateOptions } from "@/lib/ai";
 type TargetModel = "claude" | "chatgpt" | "general";
 type PromptStyle = "concise" | "detailed" | "chain-of-thought" | "structured";
 
-interface ModelOption {
-  id: TargetModel;
-  label: string;
-  description: string;
-}
-
-interface StyleOption {
-  id: PromptStyle;
-  label: string;
-  description: string;
-}
-
 // ── Config ───────────────────────────────────────────────────────────────────
 
-const MODEL_OPTIONS: ModelOption[] = [
-  {
-    id: "claude",
-    label: "Claude",
-    description: "Anthropic — prefers rich context and explicit instructions",
-  },
-  {
-    id: "chatgpt",
-    label: "ChatGPT",
-    description: "OpenAI — works well with role-based and step-by-step framing",
-  },
-  {
-    id: "general",
-    label: "General",
-    description: "Any LLM — clean, clear, model-agnostic phrasing",
-  },
+const MODEL_OPTIONS: { id: TargetModel; label: string; icon: LucideIcon }[] = [
+  { id: "claude", label: "Claude", icon: Sparkles },
+  { id: "chatgpt", label: "ChatGPT", icon: Bot },
+  { id: "general", label: "General", icon: Globe2 },
 ];
 
-const STYLE_OPTIONS: StyleOption[] = [
-  { id: "concise", label: "Concise", description: "Short, direct, no fluff" },
-  {
-    id: "detailed",
-    label: "Detailed",
-    description: "Full context with examples",
-  },
-  {
-    id: "chain-of-thought",
-    label: "Chain-of-thought",
-    description: "Ask the model to reason step-by-step",
-  },
-  {
-    id: "structured",
-    label: "Structured",
-    description: "Sections, bullets, clear output format",
-  },
+const STYLE_OPTIONS: { id: PromptStyle; label: string; icon: LucideIcon }[] = [
+  { id: "concise", label: "Concise", icon: Zap },
+  { id: "detailed", label: "Detailed", icon: FileText },
+  { id: "chain-of-thought", label: "Step-by-step", icon: Waypoints },
+  { id: "structured", label: "Structured", icon: ListTree },
 ];
 
 // ── System prompt builder ────────────────────────────────────────────────────
@@ -167,197 +146,145 @@ export default function PromptRewriterPage() {
       icon="Wand2"
       color="from-amber-500 to-orange-600"
     >
-      <div className="h-full flex flex-col lg:flex-row gap-4 -m-6 p-6 min-h-0">
-        {/* ── Left: Input + Options ── */}
-        <div className="flex flex-col lg:w-[45%] shrink-0 min-h-0 gap-3">
-          {/* Target model */}
-          <div>
-            <p className="text-xs font-medium text-text-muted mb-1.5 uppercase tracking-wide">
-              Target Model
-            </p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {MODEL_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setModel(opt.id)}
-                  className={clsx(
-                    "flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-                    model === opt.id
-                      ? "border-amber-400 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-600"
-                      : "border-border bg-surface-raised hover:border-text-muted",
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      "text-sm font-medium",
-                      model === opt.id
-                        ? "text-amber-700 dark:text-amber-400"
-                        : "text-text-primary",
-                    )}
-                  >
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] text-text-muted leading-tight mt-0.5 line-clamp-2">
-                    {opt.description}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
+        <ToolMeshBackground colors={["bg-amber-400", "bg-orange-500", "bg-rose-400"]} />
 
-          {/* Style */}
-          <div>
-            <p className="text-xs font-medium text-text-muted mb-1.5 uppercase tracking-wide">
-              Style
-            </p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {STYLE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setStyle(opt.id)}
-                  className={clsx(
-                    "flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-                    style === opt.id
-                      ? "border-amber-400 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-600"
-                      : "border-border bg-surface-raised hover:border-text-muted",
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      "text-sm font-medium",
-                      style === opt.id
-                        ? "text-amber-700 dark:text-amber-400"
-                        : "text-text-primary",
-                    )}
-                  >
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] text-text-muted leading-tight mt-0.5">
-                    {opt.description}
-                  </span>
-                </button>
-              ))}
+        <div className="max-w-5xl mx-auto flex flex-col gap-4">
+          {/* Toolbar */}
+          <GlassPanel className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                For
+              </span>
+              <SegmentedControl
+                options={MODEL_OPTIONS}
+                value={model}
+                onChange={setModel}
+                layoutId="pr-model-segment"
+                activeGradient="from-amber-500 to-orange-500"
+              />
             </div>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                Style
+              </span>
+              <SegmentedControl
+                options={STYLE_OPTIONS}
+                value={style}
+                onChange={setStyle}
+                layoutId="pr-style-segment"
+                activeGradient="from-amber-500 to-orange-500"
+              />
+            </div>
+          </GlassPanel>
 
-          {/* Textarea */}
-          <div className="flex-1 flex flex-col min-h-0 rounded-xl border border-border bg-surface-raised shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 pt-3 pb-1">
-              <span className="text-xs font-medium text-text-muted">
-                Your rough prompt
-              </span>
-              {input && (
-                <button
-                  onClick={handleClear}
-                  disabled={loading}
-                  className="text-xs text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type or paste the prompt you want to improve…"
-              className="flex-1 w-full px-4 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
-              spellCheck={false}
-            />
-            <div className="flex items-center justify-between px-4 py-2.5 border-t border-border-subtle bg-surface-sunken/60">
-              <span className="text-xs text-text-muted tabular-nums">
-                {input.trim() ? `${input.trim().length} chars` : ""}
-              </span>
-              <Button
+          {/* Transform layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_60px_1fr] gap-4 items-stretch">
+            {/* Input */}
+            <GlassPanel className="flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between px-5 pt-4 pb-1">
+                <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Rough prompt
+                </span>
+                {input && (
+                  <button
+                    onClick={handleClear}
+                    disabled={loading}
+                    className="text-xs text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type or paste the prompt you want to improve…"
+                rows={8}
+                className="flex-1 w-full px-5 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
+                spellCheck={false}
+              />
+              <div className="px-5 py-3 text-xs text-text-muted tabular-nums border-t border-white/40 dark:border-white/10">
+                {input.trim() ? `${input.trim().length} chars` : " "}
+              </div>
+            </GlassPanel>
+
+            {/* Transform button */}
+            <div className="flex lg:flex-col items-center justify-center gap-2 py-2 lg:py-0">
+              <ToolActionButton
                 onClick={handleRefine}
                 loading={loading}
                 disabled={!input.trim() || loading}
-                size="sm"
-                className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white shadow-sm"
+                icon={ArrowRight}
+                gradient="from-amber-500 to-orange-500"
+                glow="hover:shadow-orange-500/50"
+                className="rounded-full! p-0! w-14! h-14!"
               >
-                {loading ? "Refining…" : "Refine Prompt"}
-              </Button>
+                <span className="sr-only">Refine Prompt</span>
+              </ToolActionButton>
+              <span className="text-[10px] font-medium text-text-muted hidden lg:block">Refine</span>
             </div>
-          </div>
-        </div>
-
-        {/* ── Right: Output ── */}
-        <div className="flex flex-col flex-1 min-w-0 min-h-0">
-          <div className="flex items-center justify-between mb-3 gap-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-text-primary">
-                Refined Prompt
-              </h2>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {hasOutput ? (
-                  <>
-                    <span className="text-xs text-text-muted">
-                      {MODEL_OPTIONS.find((m) => m.id === model)?.label} ·{" "}
-                      {STYLE_OPTIONS.find((s) => s.id === style)?.label}
-                    </span>
-                    <ProviderBadge provider={data.provider} model={data.model} />
-                  </>
-                ) : (
-                  <p className="text-xs text-text-muted">Ready to paste into Claude or ChatGPT</p>
-                )}
-              </div>
-            </div>
-            {hasOutput && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Button variant="ghost" size="sm" onClick={handleRegenerate} disabled={loading}>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Regenerate
-                </Button>
-                <CopyButton text={data.text} />
-              </div>
-            )}
-          </div>
-
-          <div
-            className={clsx(
-              "flex-1 min-h-0 rounded-xl border shadow-sm overflow-hidden",
-              hasOutput
-                ? "border-border bg-surface-raised"
-                : "border-dashed border-border bg-surface-sunken/50",
-            )}
-          >
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2.5 m-4 p-3 rounded-lg bg-danger-subtle border border-danger/30">
-                <span className="text-danger text-xs font-medium mt-0.5 shrink-0">
-                  Error
-                </span>
-                <p className="text-xs text-danger">
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {/* Loading skeleton */}
-            {loading && <SkeletonLines lines={8} className="p-5" />}
 
             {/* Output */}
-            {!loading && hasOutput && (
-              <div className="h-full flex flex-col overflow-hidden">
-                <pre className="flex-1 px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
-                  {data.text}
-                </pre>
+            <GlassPanel
+              className={clsx(
+                "flex flex-col overflow-hidden transition-shadow duration-300",
+                hasOutput && "ring-1 ring-amber-400/30 shadow-[0_0_32px_-8px_rgba(245,158,11,0.4)]"
+              )}
+            >
+              <div className="flex items-center justify-between px-5 pt-4 pb-1 gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Refined prompt
+                </span>
+                {hasOutput && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={handleRegenerate}
+                      disabled={loading}
+                      className="text-text-muted hover:text-text-primary transition-colors"
+                      title="Regenerate"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                    <CopyButton text={data.text} />
+                  </div>
+                )}
               </div>
-            )}
 
-            {/* Empty state */}
-            {!loading && !hasOutput && !error && (
-              <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-8">
-                <div className="w-9 h-9 rounded-full bg-surface-sunken flex items-center justify-center">
-                  <EmptyIcon className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
-                </div>
-                <p className="text-sm text-text-muted">
-                  Your refined prompt will appear here
-                </p>
-                <p className="text-xs text-text-muted/70">
-                  Pick a model, pick a style, then hit Refine
-                </p>
+              <div className="flex-1 min-h-[12rem] px-5 py-2 pb-4">
+                {error && <p className="text-xs text-danger">{error}</p>}
+
+                {loading && <SkeletonLines lines={7} />}
+
+                <AnimatePresence initial={false}>
+                  {!loading && hasOutput && (
+                    <motion.pre
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed"
+                    >
+                      {data.text}
+                    </motion.pre>
+                  )}
+                </AnimatePresence>
+
+                {!loading && !hasOutput && !error && (
+                  <div className="h-full flex flex-col items-center justify-center gap-2 text-center py-8">
+                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                      <Sparkles className="w-4.5 h-4.5 text-amber-500" strokeWidth={1.5} />
+                    </div>
+                    <p className="text-sm text-text-muted">Ready to paste into Claude or ChatGPT</p>
+                  </div>
+                )}
               </div>
-            )}
+
+              {hasOutput && (
+                <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
+                  <ProviderBadge provider={data.provider} model={data.model} />
+                </div>
+              )}
+            </GlassPanel>
           </div>
         </div>
       </div>

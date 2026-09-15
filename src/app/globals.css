@@ -156,3 +156,33 @@ body {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+/* Slow ambient drift for the mesh-gradient tool backgrounds */
+@keyframes mesh-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4%, 6%) scale(1.08); }
+}
+@keyframes mesh-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-6%, -4%) scale(1.1); }
+}
+@keyframes mesh-drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-3%, 5%) scale(1.05); }
+}
+.animate-mesh-a {
+  animation: mesh-drift-a 16s ease-in-out infinite;
+}
+.animate-mesh-b {
+  animation: mesh-drift-b 20s ease-in-out infinite;
+}
+.animate-mesh-c {
+  animation: mesh-drift-c 24s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-mesh-a,
+  .animate-mesh-b,
+  .animate-mesh-c {
+    animation: none;
+  }
+}

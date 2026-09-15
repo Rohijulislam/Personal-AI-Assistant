@@ -2,25 +2,34 @@
 
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import * as Switch from "@radix-ui/react-switch";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
-import { Button } from "@/components/ui/Button";
-import { CopyButton } from "@/components/ui/CopyButton";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
+import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
+import { GlassPanel } from "@/components/tools/GlassPanel";
+import { ToolActionButton } from "@/components/tools/ToolActionButton";
+import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { clsx } from "clsx";
-import { RefreshCw, ListTodo as EmptyIcon, CheckSquare } from "lucide-react";
+import {
+  Sparkles,
+  Bug,
+  TrendingUp,
+  Wrench,
+  CheckSquare,
+  RefreshCw,
+  CircleCheck,
+  ListTodo as EmptyIcon,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { GenerateOptions } from "@/lib/ai";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type TaskType = "feature" | "bug" | "improvement" | "chore";
-
-interface TaskTypeOption {
-  id: TaskType;
-  label: string;
-  description: string;
-}
 
 interface ParsedTask {
   title: string;
@@ -30,12 +39,42 @@ interface ParsedTask {
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
-const TASK_TYPE_OPTIONS: TaskTypeOption[] = [
-  { id: "feature", label: "Feature", description: "New functionality" },
-  { id: "bug", label: "Bug Fix", description: "Something is broken" },
-  { id: "improvement", label: "Improvement", description: "Enhance existing behavior" },
-  { id: "chore", label: "Chore", description: "Cleanup, config, maintenance" },
+const TASK_TYPE_OPTIONS: { id: TaskType; label: string; icon: LucideIcon }[] = [
+  { id: "feature", label: "Feature", icon: Sparkles },
+  { id: "bug", label: "Bug Fix", icon: Bug },
+  { id: "improvement", label: "Improvement", icon: TrendingUp },
+  { id: "chore", label: "Chore", icon: Wrench },
 ];
+
+const TASK_TYPE_META: Record<
+  TaskType,
+  { label: string; borderClass: string; badgeClass: string; iconClass: string }
+> = {
+  feature: {
+    label: "Feature",
+    borderClass: "border-l-rose-500",
+    badgeClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    iconClass: "text-rose-500",
+  },
+  bug: {
+    label: "Bug Fix",
+    borderClass: "border-l-red-500",
+    badgeClass: "bg-red-500/10 text-red-600 dark:text-red-400",
+    iconClass: "text-red-500",
+  },
+  improvement: {
+    label: "Improvement",
+    borderClass: "border-l-pink-500",
+    badgeClass: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+    iconClass: "text-pink-500",
+  },
+  chore: {
+    label: "Chore",
+    borderClass: "border-l-fuchsia-500",
+    badgeClass: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+    iconClass: "text-fuchsia-500",
+  },
+};
 
 const TASK_TYPE_FRAMING: Record<TaskType, string> = {
   feature: "This is a new feature request. Describe what needs to be built and the desired end behavior.",
@@ -135,6 +174,7 @@ export default function TaskGeneratorPage() {
   const task = useMemo(() => (data ? parseTaskOutput(data.text) : null), [data]);
   const hasOutput = !!data?.text;
   const copyText = task ? formatTaskAsText(task) : (data?.text ?? "");
+  const meta = TASK_TYPE_META[taskType];
 
   return (
     <PageShell
@@ -143,83 +183,51 @@ export default function TaskGeneratorPage() {
       icon="ListTodo"
       color="from-rose-500 to-pink-600"
     >
-      <div className="h-full flex flex-col lg:flex-row gap-4 -m-6 p-6 min-h-0">
-        {/* ── Left: Input + Options ── */}
-        <div className="flex flex-col lg:w-[45%] shrink-0 min-h-0 gap-3">
-          {/* Task type */}
-          <div>
-            <p className="text-xs font-medium text-text-muted mb-1.5 uppercase tracking-wide">
-              Task Type
-            </p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {TASK_TYPE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setTaskType(opt.id)}
-                  className={clsx(
-                    "flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-                    taskType === opt.id
-                      ? "border-rose-400 bg-rose-50 dark:bg-rose-950/30 dark:border-rose-600"
-                      : "border-border bg-surface-raised hover:border-text-muted",
-                  )}
-                >
-                  <span
-                    className={clsx(
-                      "text-sm font-medium",
-                      taskType === opt.id
-                        ? "text-rose-700 dark:text-rose-400"
-                        : "text-text-primary",
-                    )}
-                  >
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] text-text-muted leading-tight mt-0.5">
-                    {opt.description}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
+        <ToolMeshBackground colors={["bg-rose-400", "bg-pink-400", "bg-fuchsia-400"]} />
 
-          {/* Acceptance criteria toggle */}
-          <button
-            onClick={() => setIncludeAcceptanceCriteria((v) => !v)}
-            className={clsx(
-              "flex items-center gap-2.5 px-3 py-2 rounded-lg border text-left transition-colors duration-150 cursor-pointer",
-              includeAcceptanceCriteria
-                ? "border-rose-400 bg-rose-50 dark:bg-rose-950/30 dark:border-rose-600"
-                : "border-border bg-surface-raised hover:border-text-muted",
-            )}
-          >
-            <CheckSquare
-              className={clsx(
-                "w-4 h-4 shrink-0",
-                includeAcceptanceCriteria ? "text-rose-600 dark:text-rose-400" : "text-text-muted",
-              )}
-              strokeWidth={1.75}
-            />
-            <span className="flex flex-col">
-              <span
+        <div className="max-w-3xl mx-auto flex flex-col gap-4">
+          {/* Toolbar */}
+          <GlassPanel className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                Type
+              </span>
+              <SegmentedControl
+                options={TASK_TYPE_OPTIONS}
+                value={taskType}
+                onChange={setTaskType}
+                layoutId="tg-type-segment"
+                activeGradient="from-rose-500 to-pink-500"
+              />
+            </div>
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <span className="text-xs font-medium text-text-secondary">
+                Acceptance criteria
+              </span>
+              <Switch.Root
+                checked={includeAcceptanceCriteria}
+                onCheckedChange={setIncludeAcceptanceCriteria}
                 className={clsx(
-                  "text-sm font-medium",
-                  includeAcceptanceCriteria
-                    ? "text-rose-700 dark:text-rose-400"
-                    : "text-text-primary",
+                  "w-9 h-5 rounded-full transition-colors duration-200 relative shrink-0",
+                  includeAcceptanceCriteria ? "bg-rose-500" : "bg-black/10 dark:bg-white/10"
                 )}
               >
-                Include acceptance criteria
-              </span>
-              <span className="text-[10px] text-text-muted leading-tight">
-                Add a checklist of testable conditions for &ldquo;done&rdquo;
-              </span>
-            </span>
-          </button>
+                <Switch.Thumb
+                  className={clsx(
+                    "block w-4 h-4 rounded-full bg-white shadow transition-transform duration-200",
+                    includeAcceptanceCriteria ? "translate-x-4" : "translate-x-0.5"
+                  )}
+                />
+              </Switch.Root>
+            </label>
+          </GlassPanel>
 
-          {/* Textarea */}
-          <div className="flex-1 flex flex-col min-h-0 rounded-xl border border-border bg-surface-raised shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 pt-3 pb-1">
-              <span className="text-xs font-medium text-text-muted">
-                Your rough task idea
+          {/* Composer */}
+          <GlassPanel className="overflow-hidden">
+            <div className="flex items-center justify-between px-5 pt-4 pb-1">
+              <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Rough idea
               </span>
               {input && (
                 <button
@@ -235,161 +243,133 @@ export default function TaskGeneratorPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="e.g. update call list UI & implement call transfer flow following figma design"
-              className="flex-1 w-full px-4 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
+              rows={3}
+              className="w-full px-5 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
               spellCheck={false}
             />
-            <div className="flex items-center justify-between px-4 py-2.5 border-t border-border-subtle bg-surface-sunken/60">
-              <span className="text-xs text-text-muted tabular-nums">
-                {input.trim() ? `${input.trim().length} chars` : ""}
+            <div className="flex items-center justify-between px-5 py-3 border-t border-white/40 dark:border-white/10">
+              <span className="text-xs text-text-muted tabular-nums truncate min-w-0">
+                {input.trim() ? `${input.trim().length} chars` : " "}
               </span>
-              <Button
+              <ToolActionButton
                 onClick={handleGenerate}
                 loading={loading}
                 disabled={!input.trim() || loading}
-                size="sm"
-                className="bg-rose-500 hover:bg-rose-600 active:bg-rose-700 text-white shadow-sm"
+                icon={TASK_TYPE_OPTIONS.find((o) => o.id === taskType)?.icon}
+                gradient="from-rose-500 to-pink-500"
+                glow="hover:shadow-rose-500/40"
               >
                 {loading ? "Generating…" : "Generate Task"}
-              </Button>
+              </ToolActionButton>
             </div>
-          </div>
-        </div>
+          </GlassPanel>
 
-        {/* ── Right: Output ── */}
-        <div className="flex flex-col flex-1 min-w-0 min-h-0">
-          <div className="flex items-center justify-between mb-3 gap-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-text-primary">
-                Structured Task
-              </h2>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {hasOutput ? (
-                  <>
-                    <span className="text-xs text-text-muted">
-                      {TASK_TYPE_OPTIONS.find((t) => t.id === taskType)?.label}
-                    </span>
-                    <ProviderBadge provider={data.provider} model={data.model} />
-                  </>
-                ) : (
-                  <p className="text-xs text-text-muted">Ready to paste into your tracker</p>
-                )}
+          {/* Error */}
+          {error && (
+            <GlassPanel className="p-4 border-danger/30 bg-danger-subtle/60">
+              <p className="text-xs text-danger">{error}</p>
+            </GlassPanel>
+          )}
+
+          {/* Loading */}
+          {loading && (
+            <GlassPanel className="p-6">
+              <SkeletonLines lines={6} />
+            </GlassPanel>
+          )}
+
+          {/* Empty */}
+          {!loading && !hasOutput && !error && (
+            <GlassPanel className="flex flex-col items-center justify-center gap-2 text-center px-8 py-14">
+              <div className="w-11 h-11 rounded-full bg-rose-500/10 flex items-center justify-center">
+                <EmptyIcon className="w-5 h-5 text-rose-500" strokeWidth={1.5} />
               </div>
-            </div>
-            {hasOutput && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Button variant="ghost" size="sm" onClick={handleRegenerate} disabled={loading}>
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Regenerate
-                </Button>
-                <CopyButton text={copyText} />
-              </div>
-            )}
-          </div>
+              <p className="text-sm text-text-muted">Your structured ticket will appear here</p>
+              <p className="text-xs text-text-muted/70">Pick a type, describe the idea, then Generate</p>
+            </GlassPanel>
+          )}
 
-          <div
-            className={clsx(
-              "flex-1 min-h-0 rounded-xl border shadow-sm overflow-hidden",
-              hasOutput
-                ? "border-border bg-surface-raised"
-                : "border-dashed border-border bg-surface-sunken/50",
-            )}
-          >
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-2.5 m-4 p-3 rounded-lg bg-danger-subtle border border-danger/30">
-                <span className="text-danger text-xs font-medium mt-0.5 shrink-0">
-                  Error
-                </span>
-                <p className="text-xs text-danger">
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {/* Loading skeleton */}
-            {loading && <SkeletonLines lines={8} className="p-5" />}
-
-            {/* Output */}
-            {!loading && hasOutput && task && (
-              <div className="h-full flex flex-col overflow-y-auto">
-                <div className="px-5 py-4 border-b border-border-subtle">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-medium text-text-muted uppercase tracking-wide">
-                      Title
-                    </span>
-                    <CopyButton text={task.title} />
-                  </div>
-                  <p className="text-sm font-semibold text-text-primary leading-snug">
-                    {task.title}
-                  </p>
-                </div>
-                <div
-                  className={clsx(
-                    "px-5 py-4",
-                    task.acceptanceCriteria.length > 0 && "border-b border-border-subtle",
-                  )}
-                >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-medium text-text-muted uppercase tracking-wide">
-                      Description
-                    </span>
-                    <CopyButton text={task.description} />
-                  </div>
-                  <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
-                    {task.description}
-                  </p>
-                </div>
-                {task.acceptanceCriteria.length > 0 && (
-                  <div className="px-5 py-4">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="text-xs font-medium text-text-muted uppercase tracking-wide">
-                        Acceptance Criteria
+          {/* Ticket card */}
+          <AnimatePresence initial={false}>
+            {!loading && hasOutput && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <GlassPanel className={clsx("overflow-hidden border-l-[4px]", meta.borderClass)}>
+                  {/* Ticket header */}
+                  <div className="flex items-center justify-between gap-2 px-5 pt-4">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={clsx(
+                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide",
+                          meta.badgeClass
+                        )}
+                      >
+                        {meta.label}
                       </span>
-                      <CopyButton
-                        text={task.acceptanceCriteria.map((c) => `- ${c}`).join("\n")}
-                      />
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-success">
+                        <CircleCheck className="w-3 h-3" />
+                        Ready to file
+                      </span>
                     </div>
-                    <ul className="flex flex-col gap-1.5">
-                      {task.acceptanceCriteria.map((item, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 text-sm text-text-primary leading-relaxed"
-                        >
-                          <CheckSquare
-                            className="w-3.5 h-3.5 mt-0.5 text-rose-500 shrink-0"
-                            strokeWidth={1.75}
-                          />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={handleRegenerate}
+                        disabled={loading}
+                        className="text-text-muted hover:text-text-primary transition-colors"
+                        title="Regenerate"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                      <CopyButton text={copyText} />
+                    </div>
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* Fallback: output didn't match expected format */}
-            {!loading && hasOutput && !task && (
-              <pre className="h-full px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
-                {data.text}
-              </pre>
-            )}
+                  {task ? (
+                    <>
+                      <div className="px-5 pt-3 pb-4">
+                        <h2 className="text-base font-bold text-text-primary leading-snug">
+                          {task.title}
+                        </h2>
+                        <p className="mt-2 text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
+                          {task.description}
+                        </p>
+                      </div>
 
-            {/* Empty state */}
-            {!loading && !hasOutput && !error && (
-              <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-8">
-                <div className="w-9 h-9 rounded-full bg-surface-sunken flex items-center justify-center">
-                  <EmptyIcon className="w-4 h-4 text-text-muted" strokeWidth={1.5} />
-                </div>
-                <p className="text-sm text-text-muted">
-                  Your structured task will appear here
-                </p>
-                <p className="text-xs text-text-muted/70">
-                  Pick a task type, describe the idea, then hit Generate
-                </p>
-              </div>
+                      {task.acceptanceCriteria.length > 0 && (
+                        <div className="px-5 pb-4 pt-3 border-t border-white/40 dark:border-white/10">
+                          <p className="text-[10px] font-semibold uppercase tracking-wide text-text-muted mb-2">
+                            Acceptance Criteria
+                          </p>
+                          <ul className="flex flex-col gap-2">
+                            {task.acceptanceCriteria.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2.5 text-sm text-text-primary leading-relaxed">
+                                <CheckSquare
+                                  className={clsx("w-4 h-4 mt-0.5 shrink-0", meta.iconClass)}
+                                  strokeWidth={1.75}
+                                />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <pre className="px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed">
+                      {data!.text}
+                    </pre>
+                  )}
+
+                  <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
+                    <ProviderBadge provider={data!.provider} model={data!.model} />
+                  </div>
+                </GlassPanel>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </div>
     </PageShell>

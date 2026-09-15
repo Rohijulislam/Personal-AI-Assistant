@@ -13,14 +13,14 @@ import {
   Terminal,
   BookMarked,
   History,
+  Settings,
   Sparkles,
   X,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
-import { navItems } from "@/lib/nav-items";
+import { navItems, navGroups } from "@/lib/nav-items";
 import { useAppUI } from "@/components/layout/AppUIProvider";
-import type { ToolId } from "@/types";
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -31,19 +31,8 @@ const iconMap: Record<string, LucideIcon> = {
   Terminal,
   BookMarked,
   History,
+  Settings,
 };
-
-const GROUPS: { label: string | null; ids: ToolId[] }[] = [
-  { label: null, ids: ["dashboard"] },
-  {
-    label: "AI Tools",
-    ids: ["daily-status", "prompt-rewriter", "text-refiner", "task-generator"],
-  },
-  {
-    label: "Library",
-    ids: ["command-library", "saved-instructions", "history"],
-  },
-];
 
 export function MobileNavDrawer() {
   const pathname = usePathname();
@@ -56,7 +45,7 @@ export function MobileNavDrawer() {
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-40 bg-black/40 sm:hidden"
+                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] sm:hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -65,11 +54,11 @@ export function MobileNavDrawer() {
             </Dialog.Overlay>
             <Dialog.Content asChild forceMount>
               <motion.div
-                className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-surface-raised border-r border-border flex flex-col sm:hidden"
+                className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] bg-surface-raised border-r border-border flex flex-col shadow-2xl sm:hidden"
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
               >
                 <Dialog.Title className="sr-only">Navigation</Dialog.Title>
                 <div className="flex items-center justify-between gap-2.5 px-4 py-4 border-b border-border">
@@ -83,7 +72,7 @@ export function MobileNavDrawer() {
                   </div>
                   <Dialog.Close asChild>
                     <button
-                      className="p-1.5 rounded-lg text-text-muted hover:bg-surface-sunken"
+                      className="p-1.5 rounded-lg text-text-muted hover:bg-surface-sunken hover:text-text-primary transition-colors"
                       aria-label="Close navigation"
                     >
                       <X className="w-4 h-4" />
@@ -92,10 +81,13 @@ export function MobileNavDrawer() {
                 </div>
 
                 <nav className="flex-1 px-2 py-3 space-y-4 overflow-y-auto" aria-label="Main navigation">
-                  {GROUPS.map((group, i) => {
+                  {navGroups.map((group, i) => {
                     const items = navItems.filter((item) => group.ids.includes(item.id));
                     return (
-                      <div key={i} className="space-y-0.5">
+                      <div
+                        key={i}
+                        className={clsx("space-y-0.5", i > 0 && "pt-3 border-t border-border-subtle")}
+                      >
                         {group.label && (
                           <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
                             {group.label}
@@ -113,10 +105,10 @@ export function MobileNavDrawer() {
                               href={item.href}
                               onClick={() => setMobileNavOpen(false)}
                               className={clsx(
-                                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150",
+                                "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150",
                                 isActive
                                   ? "bg-accent-subtle text-accent font-medium"
-                                  : "text-text-secondary hover:bg-surface-sunken hover:text-text-primary"
+                                  : "text-text-secondary active:bg-surface-sunken hover:bg-surface-sunken hover:text-text-primary"
                               )}
                               aria-current={isActive ? "page" : undefined}
                             >
