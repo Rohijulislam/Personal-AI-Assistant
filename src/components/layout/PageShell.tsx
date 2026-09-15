@@ -83,7 +83,7 @@ export function PageShell({
       </div>
 
       {/* Page content */}
-      <div className="flex-1 overflow-hidden p-6">{children}</div>
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</div>
     </div>
   );
 }

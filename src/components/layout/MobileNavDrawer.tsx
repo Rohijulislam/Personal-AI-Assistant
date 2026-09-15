@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -15,6 +17,8 @@ import {
   History,
   Settings,
   Sparkles,
+  Sun,
+  Moon,
   X,
   LucideIcon,
 } from "lucide-react";
@@ -37,6 +41,13 @@ const iconMap: Record<string, LucideIcon> = {
 export function MobileNavDrawer() {
   const pathname = usePathname();
   const { mobileNavOpen, setMobileNavOpen } = useAppUI();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   return (
     <Dialog.Root open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
@@ -127,6 +138,20 @@ export function MobileNavDrawer() {
                     );
                   })}
                 </nav>
+
+                <div className="px-2 py-3 border-t border-border">
+                  <button
+                    onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                    className="group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary transition-colors duration-150 hover:bg-surface-sunken hover:text-text-primary"
+                  >
+                    {mounted && resolvedTheme === "dark" ? (
+                      <Sun className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+                    ) : (
+                      <Moon className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+                    )}
+                    {mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
+                  </button>
+                </div>
               </motion.div>
             </Dialog.Content>
           </Dialog.Portal>
