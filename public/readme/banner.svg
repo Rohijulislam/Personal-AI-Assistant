@@ -1,0 +1,61 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a0a0f"/>
+      <stop offset="1" stop-color="#131320"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#9333ea"/></linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#0891b2"/></linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#ea580c"/></linearGradient>
+    <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#0d9488"/></linearGradient>
+    <linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#db2777"/></linearGradient>
+    <linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#glow)"/>
+
+  <!-- title -->
+  <text x="60" y="140" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#f5f5f7">My Assistant</text>
+  <text x="60" y="180" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#9ca3af">A personal, multi-provider AI toolkit — built with Next.js</text>
+
+  <!-- tool chips -->
+  <g font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#ffffff">
+    <g transform="translate(60,220)">
+      <rect width="170" height="46" rx="12" fill="url(#g1)"/>
+      <text x="16" y="29">⚡ Dashboard</text>
+    </g>
+    <g transform="translate(244,220)">
+      <rect width="190" height="46" rx="12" fill="url(#g2)"/>
+      <text x="16" y="29">📋 Daily Status</text>
+    </g>
+    <g transform="translate(448,220)">
+      <rect width="200" height="46" rx="12" fill="url(#g3)"/>
+      <text x="16" y="29">✨ Prompt Rewriter</text>
+    </g>
+    <g transform="translate(662,220)">
+      <rect width="170" height="46" rx="12" fill="url(#g4)"/>
+      <text x="16" y="29">✎ Text Refiner</text>
+    </g>
+    <g transform="translate(846,220)">
+      <rect width="180" height="46" rx="12" fill="url(#g5)"/>
+      <text x="16" y="29">☑ Task Generator</text>
+    </g>
+    <g transform="translate(60,282)">
+      <rect width="200" height="46" rx="12" fill="url(#g6)"/>
+      <text x="16" y="29">⌘ Command Library</text>
+    </g>
+    <g transform="translate(274,282)" fill="#e5e7eb">
+      <rect width="200" height="46" rx="12" fill="#27272a"/>
+      <text x="16" y="29">🔖 Saved Instructions</text>
+    </g>
+    <g transform="translate(488,282)" fill="#e5e7eb">
+      <rect width="140" height="46" rx="12" fill="#27272a"/>
+      <text x="16" y="29">↺ History</text>
+    </g>
+  </g>
+</svg>
