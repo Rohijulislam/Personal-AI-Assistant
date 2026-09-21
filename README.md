@@ -45,12 +45,60 @@ Other niceties: a `⌘K` command palette for jumping between tools, one-click co
 
 ## 🧠 AI Providers
 
-| Provider | Models available |
-|---|---|
-| **Google Gemini** | 2.5 Pro, 2.5 Flash, 2.5 Flash Lite, 2.0 Flash |
-| **Groq** | Llama 3.3 70B Versatile, Llama 3.1 8B Instant, GPT-OSS 120B, Kimi K2 Instruct |
+Every model below is verified with a real API request (`npm run test:live`), not
+just configured. Latencies are measured medians for a short completion.
 
-Set a primary provider/model and an optional backup in **Settings** — if the primary call fails, the app automatically retries on the backup.
+| Provider | Model | ~Latency | $/1M in · out | Role |
+|---|---|---|---|---|
+| **Groq** | `qwen/qwen3.8-27b` | 0.14s | 0.80 · 4.00 | Fastest (preview tier) |
+| **Groq** | `openai/gpt-oss-20b` | 0.6s | 0.10 · 0.50 | Fast + cheap |
+| **Groq** | `openai/gpt-oss-120b` | 0.7s | 0.15 · 0.60 | Default backup |
+| **Google Gemini** | `gemini-3.5-flash-lite` | 1.1s | 0.30 · 2.50 | Current-gen lite |
+| **Google Gemini** | `gemini-2.5-flash` | 1.2s | 0.30 · 2.50 | Default primary |
+| **Google Gemini** | `gemini-3.1-flash-lite` | 1.8s | 0.25 · 1.50 | Cheapest Gemini |
+| **Google Gemini** | `gemma-4-26b-a4b-it` | 2.3s | **free** | Zero-cost, own quota pool |
+
+`gemma-4-26b-a4b-it` has no paid tier at all — it is free of charge on the
+Gemini API, and it draws on its own quota, so it keeps working after the
+Gemini Flash daily cap is spent.
+
+`qwen/qwen3.8-27b` sits on Groq's preview tier ("evaluation only, may be
+discontinued at short notice"), so it is labelled as preview in Settings and
+is never a default. It is actively maintained — Groq lists it as the successor
+to qwen3.6-27b — and `npm run audit:models` will flag it if that changes.
+
+Set a primary provider/model and an optional backup in **Settings** — if the
+primary call fails, the app automatically retries on the backup.
+
+> **Free-tier note:** `gemini-2.5-flash` allows only **20 requests/day** on the
+> Gemini free tier. Past that it returns 429 and the app falls back to Groq.
+> The Groq models have no such daily cap, so make `openai/gpt-oss-120b` your
+> primary in Settings if you hit the limit often.
+
+### Maintaining the model list
+
+Provider model ranges change often, and models disappear without the app
+noticing — a model can still be listed by the provider's API yet return 404 on
+an actual request. These scripts are how the set is kept honest:
+
+```bash
+npm run audit:models       # do the configured models still exist for our keys?
+npm run probe:models       # discover every model the keys serve, and probe each
+npm run probe:reliability  # sample each model N times for pass rate + latency
+npm run probe:quality      # compare real rewrite output across candidates
+```
+
+### Tests
+
+```bash
+npm test         # offline: callback contract, fallback, cancellation, timeouts
+npm run test:live  # live: every model, end to end (needs both API keys)
+```
+
+`npm run test:live` checks each model for authentication, request, response
+parsing, streaming and non-streaming, timeouts, cancellation, error
+classification and the callback contract. A model is not considered supported
+until it passes.
 
 ## 🛠️ Tech Stack
 
