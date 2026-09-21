@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --import ./tests/ts-resolver.mjs --test tests/callbacks.test.ts tests/orchestrator.test.ts",
+    "test:live": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs --test tests/models.live.test.ts",
+    "audit:models": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/audit-models.ts",
+    "probe:models": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/probe-all.ts",
+    "probe:reliability": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/probe-reliability.ts",
+    "probe:quality": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/probe-quality.ts"
   },
   "dependencies": {
     "@google/genai": "^2.22.0",
