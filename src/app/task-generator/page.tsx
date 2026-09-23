@@ -11,6 +11,7 @@ import { SkeletonLines } from "@/components/ui/Skeleton";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { clsx } from "clsx";
 import {
   Sparkles,
@@ -354,9 +355,9 @@ export default function TaskGeneratorPage() {
                         <h2 className="text-base font-bold text-text-primary leading-snug">
                           {task.title}
                         </h2>
-                        <p className="mt-2 text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
-                          {task.description}
-                        </p>
+                        <div className="mt-2 text-sm text-text-secondary">
+                          <MarkdownRenderer text={task.description} />
+                        </div>
                       </div>
 
                       {task.acceptanceCriteria.length > 0 && (
@@ -385,9 +386,9 @@ export default function TaskGeneratorPage() {
                       )}
                     </>
                   ) : (
-                    <pre className="px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed">
-                      {data!.text}
-                    </pre>
+                    <div className="px-5 py-4">
+                      <MarkdownRenderer text={data!.text} className="text-sm" />
+                    </div>
                   )}
 
                   <div className="px-5 py-2.5 border-t border-border-subtle">

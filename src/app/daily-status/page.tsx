@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { SkeletonLines } from "@/components/ui/Skeleton";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { clsx } from "clsx";
 import { RefreshCw, ClipboardList as EmptyIcon } from "lucide-react";
@@ -280,11 +281,11 @@ ${input.trim()}`;
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="h-full"
+                  className="h-full overflow-y-auto"
                 >
-                  <pre className="h-full px-5 py-4 text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto">
-                    {data!.text}
-                  </pre>
+                  <div className="px-5 py-4 text-sm text-text-primary">
+                    <MarkdownRenderer text={data!.text} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

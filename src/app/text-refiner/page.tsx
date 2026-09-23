@@ -10,6 +10,7 @@ import { SkeletonLines } from "@/components/ui/Skeleton";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import {
   Users,
   UserCog,
@@ -255,9 +256,7 @@ export default function TextRefinerPage() {
                     {error && <p className="text-xs text-danger">{error}</p>}
                     {loading && <SkeletonLines lines={4} />}
                     {!loading && hasOutput && (
-                      <pre className="text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed">
-                        {data!.text}
-                      </pre>
+                      <MarkdownRenderer text={data!.text} className="text-sm" />
                     )}
                   </div>
 

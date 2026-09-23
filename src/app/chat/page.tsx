@@ -7,6 +7,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { useGenerate } from "@/lib/hooks/useGenerate";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { clsx } from "clsx";
 import {
   MessageSquare,
@@ -208,8 +209,8 @@ function MessageBubble({
 
             {/* Streaming / settled text */}
             {(asst!.streamText || (!asst!.loading && asst!.text)) && (
-              <div className="px-4 py-2.5 rounded-md rounded-tl-sm bg-surface-raised border border-border text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
-                {liveText}
+              <div className="px-4 py-2.5 rounded-md rounded-tl-sm bg-surface-raised border border-border text-sm text-text-primary">
+                <MarkdownRenderer text={liveText} />
                 {asst!.loading && (
                   <motion.span
                     className="inline-block w-0.5 h-3.5 bg-accent ml-0.5 align-middle"

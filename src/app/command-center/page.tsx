@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
 import { clsx } from "clsx";
@@ -997,13 +998,13 @@ function AssistantBubble({
                   !expanded && "max-h-32 overflow-hidden",
                 )}
               >
-                <pre className="text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed">
-                  {displayText}
+                <div className="text-sm text-text-primary">
+                  <MarkdownRenderer text={displayText} />
                   {/* Streaming cursor */}
                   {message.loading && (
                     <span className="inline-block w-0.5 h-4 bg-accent align-middle ml-0.5 animate-pulse" />
                   )}
-                </pre>
+                </div>
               </div>
 
               {/* Collapse toggle for long responses */}

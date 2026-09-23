@@ -6,6 +6,7 @@ import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { ToolBarBreakdown, ToolIcon, toolLabel } from "@/components/tools/UsageCharts";
 import { useUsageLog } from "@/lib/hooks/useUsageLog";
 import { groupByDay, formatDayLabel, toolCounts } from "@/lib/usage-stats";
@@ -81,15 +82,15 @@ export default function HistoryPage() {
                             {formatTime(entry.createdAt)}
                           </span>
                         </div>
-                        <p
-                          className={
-                            isExpanded
-                              ? "mt-1 text-sm text-text-secondary whitespace-pre-wrap"
-                              : "mt-1 text-sm text-text-secondary line-clamp-2"
-                          }
-                        >
-                          {entry.text}
-                        </p>
+                        {isExpanded ? (
+                          <div className="mt-1 text-sm text-text-secondary">
+                            <MarkdownRenderer text={entry.text} />
+                          </div>
+                        ) : (
+                          <p className="mt-1 text-sm text-text-secondary line-clamp-2">
+                            {entry.text}
+                          </p>
+                        )}
                         <div className="mt-2 flex items-center gap-2">
                           <ProviderBadge provider={entry.provider} model={entry.model} />
                           <button

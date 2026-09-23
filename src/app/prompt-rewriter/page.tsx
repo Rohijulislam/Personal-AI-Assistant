@@ -10,6 +10,7 @@ import { SkeletonLines } from "@/components/ui/Skeleton";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import {
   Sparkles,
   Bot,
@@ -246,14 +247,13 @@ export default function PromptRewriterPage() {
 
                 <AnimatePresence initial={false}>
                   {!loading && hasOutput && (
-                    <motion.pre
+                    <motion.div
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="text-sm text-text-primary whitespace-pre-wrap font-sans leading-relaxed"
                     >
-                      {data.text}
-                    </motion.pre>
+                      <MarkdownRenderer text={data.text} className="text-sm" />
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
