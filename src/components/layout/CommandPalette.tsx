@@ -14,6 +14,7 @@ import {
   History,
   Settings,
   Search,
+  MessageSquare,
   LucideIcon,
 } from "lucide-react";
 import { navItems } from "@/lib/nav-items";
@@ -31,6 +32,7 @@ const iconMap: Record<string, LucideIcon> = {
   BookMarked,
   History,
   Settings,
+  MessageSquare,
 };
 
 export function CommandPalette() {
@@ -79,9 +81,7 @@ export function CommandPalette() {
           No results found.
         </Command.Empty>
 
-        <Command.Group
-          heading="Navigate"
-        >
+        <Command.Group heading="Navigate">
           {navItems.map((item) => {
             const Icon = iconMap[item.icon] ?? LayoutDashboard;
             return (
@@ -91,10 +91,15 @@ export function CommandPalette() {
                 onSelect={() => goto(item.href)}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-primary"
               >
-                <Icon className="w-4 h-4 shrink-0 text-text-muted" aria-hidden="true" />
+                <Icon
+                  className="w-4 h-4 shrink-0 text-text-muted"
+                  aria-hidden="true"
+                />
                 <div className="flex flex-col">
                   <span>{item.label}</span>
-                  <span className="text-xs text-text-muted">{item.description}</span>
+                  <span className="text-xs text-text-muted">
+                    {item.description}
+                  </span>
                 </div>
               </Command.Item>
             );
@@ -102,9 +107,7 @@ export function CommandPalette() {
         </Command.Group>
 
         {instructions.length > 0 && (
-          <Command.Group
-            heading="Saved instructions"
-          >
+          <Command.Group heading="Saved instructions">
             {instructions.slice(0, 8).map((instr) => (
               <Command.Item
                 key={instr.id}
@@ -112,7 +115,10 @@ export function CommandPalette() {
                 onSelect={() => goto("/saved-instructions")}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-primary"
               >
-                <BookMarked className="w-4 h-4 shrink-0 text-text-muted" aria-hidden="true" />
+                <BookMarked
+                  className="w-4 h-4 shrink-0 text-text-muted"
+                  aria-hidden="true"
+                />
                 <span className="truncate">{instr.title}</span>
               </Command.Item>
             ))}
@@ -120,9 +126,7 @@ export function CommandPalette() {
         )}
 
         {entries.length > 0 && (
-          <Command.Group
-            heading="Recent history"
-          >
+          <Command.Group heading="Recent history">
             {entries.slice(0, 5).map((entry) => (
               <Command.Item
                 key={entry.id}
@@ -130,7 +134,10 @@ export function CommandPalette() {
                 onSelect={() => goto("/history")}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-primary"
               >
-                <History className="w-4 h-4 shrink-0 text-text-muted" aria-hidden="true" />
+                <History
+                  className="w-4 h-4 shrink-0 text-text-muted"
+                  aria-hidden="true"
+                />
                 <span className="truncate">{entry.prompt || entry.text}</span>
               </Command.Item>
             ))}

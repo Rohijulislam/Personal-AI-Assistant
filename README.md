@@ -19,23 +19,32 @@
 
 ## What is this?
 
-**My Assistant** is a single-user productivity dashboard that wraps several everyday AI tasks — turning raw notes into a daily status update, rewriting rough prompts, refining tone, and generating structured dev tasks — behind one clean, keyboard-friendly UI. It's designed to feel like a focused internal tool, not a generic chatbot: pick a card, paste your text, get a formatted result, copy it, move on.
+**My Assistant** is a single-user productivity dashboard that wraps several everyday AI tasks — turning raw notes into a daily status update, rewriting rough prompts, refining tone, and generating structured dev tasks — behind one clean, keyboard-friendly UI. It also includes a **Command Center** that acts as an intelligent orchestrator (describe any task, it figures out which tool to use) and a **Chat** page for open-ended, multi-turn conversations. The whole thing is designed to feel like a focused internal tool, not a generic chatbot: pick a card, paste your text, get a formatted result, copy it, move on.
 
 It talks to **two AI providers** (Google Gemini and Groq) with an automatic primary/backup fallback, so a rate limit or outage on one provider doesn't stop your work.
 
 ## ✨ Features
 
-| Tool | What it does |
-|---|---|
-| 📊 **Dashboard** | At-a-glance usage stats and quick links into every tool |
-| 📋 **Daily Status** | Converts raw standup notes into your exact reporting format |
-| ✨ **Prompt Rewriter** | Turns a rough prompt into a clearer, more effective one |
-| ✎ **Text Refiner** | Rewrites messages in a selectable tone (formal, casual, concise…) |
-| ☑ **Task Generator** | Turns a loose idea into structured, actionable dev tasks |
-| ⌘ **Command Library** | Saved shell commands, shortcuts, and snippets, searchable in one place |
-| 🔖 **Saved Instructions** | Reusable system prompts/instructions per workflow |
-| ↺ **History** | Every generation you've made, with the ability to revisit or copy it again |
-| ⚙️ **Settings** | Choose your primary and backup AI provider/model |
+| Tool                      | What it does                                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 📊 **Dashboard**          | At-a-glance usage stats and quick links into every tool                                               |
+| 🧠 **Command Center**     | Intelligent orchestrator — describe any task and it routes to the right specialist tool automatically |
+| 💬 **Chat**               | General-purpose AI conversation — no routing, no templates, just a direct multi-turn chat             |
+| 📋 **Daily Status**       | Converts raw standup notes into your exact reporting format                                           |
+| ✨ **Prompt Rewriter**    | Turns a rough prompt into a clearer, more effective one                                               |
+| ✎ **Text Refiner**        | Rewrites messages in a selectable tone (formal, casual, concise…)                                     |
+| ☑ **Task Generator**      | Turns a loose idea into structured, actionable dev tasks                                              |
+| ⌘ **Command Library**     | Saved shell commands, shortcuts, and snippets, searchable in one place                                |
+| 🔖 **Saved Instructions** | Reusable system prompts/instructions per workflow                                                     |
+| ↺ **History**             | Every generation you've made, with the ability to revisit or copy it again                            |
+| ⚙️ **Settings**           | Choose your primary and backup AI provider/model                                                      |
+
+### Command Center vs Chat
+
+Both are AI-powered chat interfaces, but they serve different purposes:
+
+- **Command Center** — goal-oriented. Describe a task (format my standup, rewrite this prompt, create a ticket) and an orchestrator automatically routes it to the right specialist tool, each with its own tuned system prompt and temperature.
+- **Chat** — conversation-oriented. A direct, persistent multi-turn conversation with no routing or templates. Best for questions, brainstorming, explaining concepts, or anything that doesn't fit a structured workflow.
 
 Other niceties: a `⌘K` command palette for jumping between tools, one-click copy on every result, a mobile nav drawer, and per-tool usage charts on the dashboard.
 
@@ -48,15 +57,15 @@ Other niceties: a `⌘K` command palette for jumping between tools, one-click co
 Every model below is verified with a real API request (`npm run test:live`), not
 just configured. Latencies are measured medians for a short completion.
 
-| Provider | Model | ~Latency | $/1M in · out | Role |
-|---|---|---|---|---|
-| **Groq** | `qwen/qwen3.8-27b` | 0.14s | 0.80 · 4.00 | Fastest (preview tier) |
-| **Groq** | `openai/gpt-oss-20b` | 0.6s | 0.10 · 0.50 | Fast + cheap |
-| **Groq** | `openai/gpt-oss-120b` | 0.7s | 0.15 · 0.60 | Default backup |
-| **Google Gemini** | `gemini-3.5-flash-lite` | 1.1s | 0.30 · 2.50 | Current-gen lite |
-| **Google Gemini** | `gemini-2.5-flash` | 1.2s | 0.30 · 2.50 | Default primary |
-| **Google Gemini** | `gemini-3.1-flash-lite` | 1.8s | 0.25 · 1.50 | Cheapest Gemini |
-| **Google Gemini** | `gemma-4-26b-a4b-it` | 2.3s | **free** | Zero-cost, own quota pool |
+| Provider          | Model                   | ~Latency | $/1M in · out | Role                      |
+| ----------------- | ----------------------- | -------- | ------------- | ------------------------- |
+| **Groq**          | `qwen/qwen3.8-27b`      | 0.14s    | 0.80 · 4.00   | Fastest (preview tier)    |
+| **Groq**          | `openai/gpt-oss-20b`    | 0.6s     | 0.10 · 0.50   | Fast + cheap              |
+| **Groq**          | `openai/gpt-oss-120b`   | 0.7s     | 0.15 · 0.60   | Default backup            |
+| **Google Gemini** | `gemini-3.5-flash-lite` | 1.1s     | 0.30 · 2.50   | Current-gen lite          |
+| **Google Gemini** | `gemini-2.5-flash`      | 1.2s     | 0.30 · 2.50   | Default primary           |
+| **Google Gemini** | `gemini-3.1-flash-lite` | 1.8s     | 0.25 · 1.50   | Cheapest Gemini           |
+| **Google Gemini** | `gemma-4-26b-a4b-it`    | 2.3s     | **free**      | Zero-cost, own quota pool |
 
 `gemma-4-26b-a4b-it` has no paid tier at all — it is free of charge on the
 Gemini API, and it draws on its own quota, so it keeps working after the
@@ -151,15 +160,26 @@ This app deploys to [Vercel](https://vercel.com) in a couple of clicks — free 
 
 ```
 src/
-├── app/                  # Routes (one folder per tool) + API route for generation
+├── app/
+│   ├── chat/             # Normal Chat — general-purpose multi-turn AI conversation
+│   ├── command-center/   # Command Center — orchestrator that routes to specialist tools
+│   ├── daily-status/
+│   ├── prompt-rewriter/
+│   ├── text-refiner/
+│   ├── task-generator/
+│   ├── command-library/
+│   ├── saved-instructions/
+│   ├── history/
+│   ├── settings/
+│   └── api/generate/     # Single shared API route for all AI calls (streaming + non-streaming)
 ├── components/
 │   ├── layout/           # Sidebar, mobile nav, command palette, page shell
-│   ├── tools/             # Cards, panels, charts used across tool pages
-│   └── ui/                # Buttons, badges, textarea, skeletons — shared primitives
+│   ├── tools/            # Cards, panels, charts used across tool pages
+│   └── ui/               # Buttons, badges, textarea, skeletons — shared primitives
 ├── lib/
-│   ├── ai/                # Provider clients (Gemini, Groq), model config, generation logic
-│   └── hooks/              # Local-storage-backed hooks for history, library, settings
-└── types/                 # Shared TypeScript types
+│   ├── ai/               # Provider clients (Gemini, Groq), model config, generation logic
+│   └── hooks/            # Local-storage-backed hooks for history, library, settings
+└── types/                # Shared TypeScript types
 ```
 
 ## 🔒 Privacy

@@ -8,6 +8,9 @@ import {
   Terminal,
   BookMarked,
   History,
+  Settings,
+  BrainCircuit,
+  MessageSquare,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -22,6 +25,9 @@ const iconMap: Record<string, LucideIcon> = {
   Terminal,
   BookMarked,
   History,
+  Settings,
+  BrainCircuit,
+  MessageSquare,
 };
 
 interface ToolCardProps {
@@ -40,7 +46,7 @@ export function ToolCard({ item }: ToolCardProps) {
         <div
           className={clsx(
             "flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center",
-            item.color
+            item.color,
           )}
         >
           <Icon className="w-5 h-5 text-white" aria-hidden="true" />
