@@ -20,6 +20,7 @@ import {
   Sun,
   Moon,
   X,
+  BrainCircuit,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -36,6 +37,7 @@ const iconMap: Record<string, LucideIcon> = {
   BookMarked,
   History,
   Settings,
+  BrainCircuit,
 };
 
 export function MobileNavDrawer() {
@@ -91,13 +93,21 @@ export function MobileNavDrawer() {
                   </Dialog.Close>
                 </div>
 
-                <nav className="flex-1 px-2 py-3 space-y-4 overflow-y-auto" aria-label="Main navigation">
+                <nav
+                  className="flex-1 px-2 py-3 space-y-4 overflow-y-auto"
+                  aria-label="Main navigation"
+                >
                   {navGroups.map((group, i) => {
-                    const items = navItems.filter((item) => group.ids.includes(item.id));
+                    const items = navItems.filter((item) =>
+                      group.ids.includes(item.id),
+                    );
                     return (
                       <div
                         key={i}
-                        className={clsx("space-y-0.5", i > 0 && "pt-3 border-t border-border-subtle")}
+                        className={clsx(
+                          "space-y-0.5",
+                          i > 0 && "pt-3 border-t border-border-subtle",
+                        )}
                       >
                         {group.label && (
                           <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
@@ -108,7 +118,8 @@ export function MobileNavDrawer() {
                           const Icon = iconMap[item.icon] ?? LayoutDashboard;
                           const isActive =
                             pathname === item.href ||
-                            (item.href !== "/" && pathname.startsWith(item.href));
+                            (item.href !== "/" &&
+                              pathname.startsWith(item.href));
 
                           return (
                             <Link
@@ -119,14 +130,14 @@ export function MobileNavDrawer() {
                                 "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150",
                                 isActive
                                   ? "bg-accent-subtle text-accent font-medium"
-                                  : "text-text-secondary active:bg-surface-sunken hover:bg-surface-sunken hover:text-text-primary"
+                                  : "text-text-secondary active:bg-surface-sunken hover:bg-surface-sunken hover:text-text-primary",
                               )}
                               aria-current={isActive ? "page" : undefined}
                             >
                               <Icon
                                 className={clsx(
                                   "w-4 h-4 shrink-0",
-                                  isActive ? "text-accent" : "text-text-muted"
+                                  isActive ? "text-accent" : "text-text-muted",
                                 )}
                                 aria-hidden="true"
                               />
@@ -141,15 +152,25 @@ export function MobileNavDrawer() {
 
                 <div className="px-2 py-3 border-t border-border">
                   <button
-                    onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                    onClick={() =>
+                      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                    }
                     className="group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary transition-colors duration-150 hover:bg-surface-sunken hover:text-text-primary"
                   >
                     {mounted && resolvedTheme === "dark" ? (
-                      <Sun className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+                      <Sun
+                        className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <Moon className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+                      <Moon
+                        className="w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary"
+                        aria-hidden="true"
+                      />
                     )}
-                    {mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
+                    {mounted && resolvedTheme === "dark"
+                      ? "Light mode"
+                      : "Dark mode"}
                   </button>
                 </div>
               </motion.div>

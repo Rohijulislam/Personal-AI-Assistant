@@ -1,5 +1,6 @@
 export type ToolId =
   | "dashboard"
+  | "command-center"
   | "daily-status"
   | "prompt-rewriter"
   | "text-refiner"

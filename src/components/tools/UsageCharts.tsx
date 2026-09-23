@@ -7,6 +7,7 @@ import {
   Terminal,
   BookMarked,
   History,
+  BrainCircuit,
   LucideIcon,
 } from "lucide-react";
 import { navItems } from "@/lib/nav-items";
@@ -21,13 +22,20 @@ const iconMap: Record<string, LucideIcon> = {
   Terminal,
   BookMarked,
   History,
+  BrainCircuit,
 };
 
 export function toolLabel(toolId: ToolId): string {
   return navItems.find((n) => n.id === toolId)?.label ?? toolId;
 }
 
-export function ToolIcon({ toolId, className }: { toolId: ToolId; className?: string }) {
+export function ToolIcon({
+  toolId,
+  className,
+}: {
+  toolId: ToolId;
+  className?: string;
+}) {
   const item = navItems.find((n) => n.id === toolId);
   const Icon = iconMap[item?.icon ?? ""] ?? LayoutDashboard;
   return <Icon className={className} aria-hidden="true" />;
@@ -85,7 +93,10 @@ export function ToolBarBreakdown({ data }: ToolBarBreakdownProps) {
     <div className="flex flex-col gap-2">
       {data.map((d) => (
         <div key={d.toolId} className="flex items-center gap-2.5">
-          <ToolIcon toolId={d.toolId} className="w-3.5 h-3.5 text-text-muted shrink-0" />
+          <ToolIcon
+            toolId={d.toolId}
+            className="w-3.5 h-3.5 text-text-muted shrink-0"
+          />
           <span className="text-xs text-text-secondary w-28 shrink-0 truncate">
             {toolLabel(d.toolId)}
           </span>

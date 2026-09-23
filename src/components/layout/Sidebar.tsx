@@ -20,6 +20,7 @@ import {
   Sun,
   Moon,
   ChevronLeft,
+  BrainCircuit,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -36,11 +37,13 @@ const iconMap: Record<string, LucideIcon> = {
   BookMarked,
   History,
   Settings,
+  BrainCircuit,
 };
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { setCommandPaletteOpen, sidebarCollapsed, setSidebarCollapsed } = useAppUI();
+  const { setCommandPaletteOpen, sidebarCollapsed, setSidebarCollapsed } =
+    useAppUI();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -57,7 +60,7 @@ export function Sidebar() {
     <aside
       className={clsx(
         "hidden sm:flex relative shrink-0 h-screen flex-col bg-surface-raised border-r border-border overflow-y-auto overflow-x-hidden transition-[width] duration-200 ease-out",
-        collapsed ? "sm:w-16" : "sm:w-16 lg:w-60"
+        collapsed ? "sm:w-16" : "sm:w-16 lg:w-60",
       )}
     >
       {/* Collapse toggle — floats on the edge, only meaningful at lg+ */}
@@ -68,7 +71,10 @@ export function Sidebar() {
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <ChevronLeft
-          className={clsx("w-3.5 h-3.5 transition-transform duration-200", collapsed && "rotate-180")}
+          className={clsx(
+            "w-3.5 h-3.5 transition-transform duration-200",
+            collapsed && "rotate-180",
+          )}
         />
       </button>
 
@@ -93,16 +99,26 @@ export function Sidebar() {
           onClick={() => setCommandPaletteOpen(true)}
           className={clsx(
             "group flex w-full items-center gap-3 rounded-lg border border-border/70 bg-surface-sunken/60 text-sm text-text-secondary transition-colors duration-150 hover:border-accent/30 hover:bg-surface-sunken hover:text-text-primary",
-            collapsed ? "justify-center px-0 py-2" : "px-3 py-2"
+            collapsed ? "justify-center px-0 py-2" : "px-3 py-2",
           )}
           title="Search (⌘K)"
         >
-          <Search className="w-4 h-4 shrink-0 text-text-muted group-hover:text-accent transition-colors" aria-hidden="true" />
-          <span className={clsx("hidden flex-1 text-left", !collapsed && "lg:inline")}>Search</span>
+          <Search
+            className="w-4 h-4 shrink-0 text-text-muted group-hover:text-accent transition-colors"
+            aria-hidden="true"
+          />
+          <span
+            className={clsx(
+              "hidden flex-1 text-left",
+              !collapsed && "lg:inline",
+            )}
+          >
+            Search
+          </span>
           <kbd
             className={clsx(
               "hidden shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] text-text-muted",
-              !collapsed && "lg:inline"
+              !collapsed && "lg:inline",
             )}
           >
             ⌘K
@@ -119,14 +135,14 @@ export function Sidebar() {
               key={i}
               className={clsx(
                 "space-y-0.5",
-                i > 0 && "pt-3 border-t border-border-subtle"
+                i > 0 && "pt-3 border-t border-border-subtle",
               )}
             >
               {group.label && (
                 <p
                   className={clsx(
                     "hidden px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted",
-                    !collapsed && "lg:block"
+                    !collapsed && "lg:block",
                   )}
                 >
                   {group.label}
@@ -148,7 +164,7 @@ export function Sidebar() {
                       collapsed ? "justify-center px-0" : "px-3",
                       isActive
                         ? "text-accent font-medium"
-                        : "text-text-secondary hover:text-text-primary"
+                        : "text-text-secondary hover:text-text-primary",
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -156,7 +172,12 @@ export function Sidebar() {
                       <motion.span
                         layoutId="sidebar-active-pill"
                         className="absolute inset-0 rounded-lg bg-accent-subtle"
-                        transition={{ type: "spring", stiffness: 500, damping: 38, mass: 0.6 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 38,
+                          mass: 0.6,
+                        }}
                       />
                     )}
                     {!isActive && (
@@ -165,11 +186,18 @@ export function Sidebar() {
                     <Icon
                       className={clsx(
                         "relative z-10 w-4 h-4 shrink-0",
-                        isActive ? "text-accent" : "text-text-muted group-hover:text-text-primary"
+                        isActive
+                          ? "text-accent"
+                          : "text-text-muted group-hover:text-text-primary",
                       )}
                       aria-hidden="true"
                     />
-                    <span className={clsx("relative z-10 hidden truncate", !collapsed && "lg:inline")}>
+                    <span
+                      className={clsx(
+                        "relative z-10 hidden truncate",
+                        !collapsed && "lg:inline",
+                      )}
+                    >
                       {item.label}
                     </span>
 
@@ -177,7 +205,7 @@ export function Sidebar() {
                     <span
                       className={clsx(
                         "pointer-events-none absolute left-full top-1/2 z-30 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border border-border bg-surface-raised px-2 py-1 text-xs font-medium text-text-primary opacity-0 shadow-md transition-opacity duration-100 group-hover:opacity-100",
-                        collapsed ? "lg:block" : "lg:hidden"
+                        collapsed ? "lg:block" : "lg:hidden",
                       )}
                     >
                       {item.label}
@@ -196,21 +224,38 @@ export function Sidebar() {
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           className={clsx(
             "group relative flex w-full items-center gap-3 rounded-lg py-2 text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary",
-            collapsed ? "justify-center px-0" : "px-3"
+            collapsed ? "justify-center px-0" : "px-3",
           )}
-          title={mounted && resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          title={
+            mounted && resolvedTheme === "dark"
+              ? "Switch to light mode"
+              : "Switch to dark mode"
+          }
         >
           <span className="absolute inset-0 rounded-lg bg-surface-sunken opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
           {mounted && resolvedTheme === "dark" ? (
-            <Sun className="relative z-10 w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+            <Sun
+              className="relative z-10 w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary"
+              aria-hidden="true"
+            />
           ) : (
-            <Moon className="relative z-10 w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary" aria-hidden="true" />
+            <Moon
+              className="relative z-10 w-4 h-4 shrink-0 text-text-muted group-hover:text-text-primary"
+              aria-hidden="true"
+            />
           )}
-          <span className={clsx("relative z-10 hidden", !collapsed && "lg:inline")}>
+          <span
+            className={clsx("relative z-10 hidden", !collapsed && "lg:inline")}
+          >
             {mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
           </span>
         </button>
-        <p className={clsx("hidden px-3 pt-1 text-[10px] text-text-muted", !collapsed && "lg:block")}>
+        <p
+          className={clsx(
+            "hidden px-3 pt-1 text-[10px] text-text-muted",
+            !collapsed && "lg:block",
+          )}
+        >
           Powered by Google AI &amp; Groq
         </p>
       </div>
