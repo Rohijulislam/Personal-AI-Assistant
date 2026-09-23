@@ -13,6 +13,7 @@ import {
   Settings,
   Menu,
   BrainCircuit,
+  MessageSquare,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -29,6 +30,7 @@ const iconMap: Record<string, LucideIcon> = {
   History,
   Settings,
   BrainCircuit,
+  MessageSquare,
 };
 
 interface PageShellProps {
