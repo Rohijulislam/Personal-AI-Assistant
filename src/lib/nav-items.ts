@@ -23,7 +23,6 @@ export const navItems: NavItem[] = [
     href: "/dashboard",
     icon: "LayoutDashboard",
     description: "Quick access to all your tools",
-    color: "from-violet-500 to-purple-600",
   },
   {
     id: "command-center",
@@ -31,7 +30,6 @@ export const navItems: NavItem[] = [
     href: "/command-center",
     icon: "BrainCircuit",
     description: "Goal-oriented AI assistant — just describe what you need",
-    color: "from-violet-500 to-fuchsia-600",
   },
   {
     id: "chat",
@@ -39,7 +37,6 @@ export const navItems: NavItem[] = [
     href: "/chat",
     icon: "MessageSquare",
     description: "General-purpose conversation with the AI",
-    color: "from-sky-500 to-blue-600",
   },
   {
     id: "daily-status",
@@ -47,7 +44,6 @@ export const navItems: NavItem[] = [
     href: "/daily-status",
     icon: "ClipboardList",
     description: "Convert raw updates into your exact format",
-    color: "from-blue-500 to-cyan-600",
   },
   {
     id: "prompt-rewriter",
@@ -55,7 +51,6 @@ export const navItems: NavItem[] = [
     href: "/prompt-rewriter",
     icon: "Wand2",
     description: "Improve rough prompts for better AI output",
-    color: "from-amber-500 to-orange-600",
   },
   {
     id: "text-refiner",
@@ -63,7 +58,6 @@ export const navItems: NavItem[] = [
     href: "/text-refiner",
     icon: "PenLine",
     description: "Refine messages with selectable tones",
-    color: "from-emerald-500 to-teal-600",
   },
   {
     id: "task-generator",
@@ -71,7 +65,6 @@ export const navItems: NavItem[] = [
     href: "/task-generator",
     icon: "ListTodo",
     description: "Turn ideas into structured developer tasks",
-    color: "from-rose-500 to-pink-600",
   },
   {
     id: "command-library",
@@ -79,7 +72,6 @@ export const navItems: NavItem[] = [
     href: "/command-library",
     icon: "Terminal",
     description: "Saved commands, shortcuts, and snippets",
-    color: "from-slate-500 to-zinc-600",
   },
   {
     id: "saved-instructions",
@@ -87,7 +79,6 @@ export const navItems: NavItem[] = [
     href: "/saved-instructions",
     icon: "BookMarked",
     description: "Reusable AI instructions for each workflow",
-    color: "from-indigo-500 to-blue-600",
   },
   {
     id: "history",
@@ -95,7 +86,6 @@ export const navItems: NavItem[] = [
     href: "/history",
     icon: "History",
     description: "Recently generated results",
-    color: "from-stone-500 to-neutral-600",
   },
   {
     id: "settings",
@@ -103,6 +93,5 @@ export const navItems: NavItem[] = [
     href: "/settings",
     icon: "Settings",
     description: "Choose default and backup AI models",
-    color: "from-gray-500 to-slate-600",
   },
 ];

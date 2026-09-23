@@ -16,7 +16,6 @@ import {
   BookMarked,
   History,
   Settings,
-  Sparkles,
   Sun,
   Moon,
   X,
@@ -78,8 +77,10 @@ export function MobileNavDrawer() {
                 <Dialog.Title className="sr-only">Navigation</Dialog.Title>
                 <div className="flex items-center justify-between gap-2.5 px-4 py-4 border-b border-border">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-3.5 h-3.5 text-white" />
+                    <div className="w-7 h-7 rounded-[5px] bg-accent flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-white leading-none">
+                        A
+                      </span>
                     </div>
                     <span className="text-sm font-semibold text-text-primary tracking-tight">
                       My Assistant

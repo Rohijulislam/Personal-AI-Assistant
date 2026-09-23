@@ -79,7 +79,6 @@ export default function SavedInstructionsPage() {
         title="Saved Instructions"
         description="Create and reuse commands, prompts, credentials, and snippets"
         icon="BookMarked"
-        color="from-indigo-500 to-blue-600"
       >
         <div className="flex flex-col h-full gap-4">
           {/* Toolbar */}
@@ -105,7 +104,7 @@ export default function SavedInstructionsPage() {
                   onClick={() => setCategoryFilter(value)}
                   className={
                     categoryFilter === value
-                      ? "px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white"
+                      ? "px-3 py-1.5 rounded-lg text-xs font-medium bg-accent text-white"
                       : "px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-sunken text-text-secondary hover:bg-border transition-colors"
                   }
                 >
@@ -133,8 +132,8 @@ export default function SavedInstructionsPage() {
             ) : instructions.length === 0 ? (
               /* True empty state */
               <div className="flex flex-col items-center justify-center h-64 gap-3 text-center">
-                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
-                  <BookMarked className="w-6 h-6 text-indigo-500" />
+                <div className="w-12 h-12 rounded-md border border-border flex items-center justify-center">
+                  <BookMarked className="w-6 h-6 text-accent" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-text-secondary">

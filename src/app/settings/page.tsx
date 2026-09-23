@@ -16,7 +16,6 @@ function ModelPicker({
   title,
   description,
   icon,
-  accent,
   provider,
   model,
   onChangeProvider,
@@ -25,21 +24,15 @@ function ModelPicker({
   title: string;
   description: string;
   icon: React.ReactNode;
-  accent: string;
   provider: AIProvider;
   model: string;
   onChangeProvider: (provider: AIProvider) => void;
   onChangeModel: (model: string) => void;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-surface-raised p-4 shadow-sm">
+    <div className="rounded-md border border-border bg-surface-raised p-4">
       <div className="flex items-center gap-2 mb-3">
-        <div
-          className={clsx(
-            "w-7 h-7 rounded-lg bg-gradient-to-br flex items-center justify-center shrink-0",
-            accent
-          )}
-        >
+        <div className="w-7 h-7 rounded-[5px] border border-border flex items-center justify-center shrink-0">
           {icon}
         </div>
         <div>
@@ -119,7 +112,6 @@ export default function SettingsPage() {
       title="Settings"
       description="Choose the default and backup AI model used across every tool"
       icon="Settings"
-      color="from-gray-500 to-slate-600"
     >
       {!hydrated ? (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -132,8 +124,7 @@ export default function SettingsPage() {
             <ModelPicker
               title="Default model"
               description="Used first for every request"
-              icon={<Star className="w-3.5 h-3.5 text-white" />}
-              accent="from-violet-500 to-purple-600"
+              icon={<Star className="w-3.5 h-3.5 text-accent" />}
               provider={settings.primaryProvider}
               model={settings.primaryModel}
               onChangeProvider={handlePrimaryProvider}
@@ -142,8 +133,7 @@ export default function SettingsPage() {
             <ModelPicker
               title="Backup model"
               description="Used automatically if the default model fails"
-              icon={<ShieldCheck className="w-3.5 h-3.5 text-white" />}
-              accent="from-emerald-500 to-teal-600"
+              icon={<ShieldCheck className="w-3.5 h-3.5 text-accent" />}
               provider={settings.backupProvider}
               model={settings.backupModel}
               onChangeProvider={handleBackupProvider}
@@ -152,7 +142,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Enable backup toggle */}
-          <div className="flex items-center justify-between rounded-xl border border-border bg-surface-raised p-4 shadow-sm">
+          <div className="flex items-center justify-between rounded-md border border-border bg-surface-raised p-4">
             <div>
               <p className="text-sm font-medium text-text-primary">
                 Automatic fallback

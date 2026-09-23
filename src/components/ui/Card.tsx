@@ -10,8 +10,8 @@ export function Card({ children, className, as: Tag = "div" }: CardProps) {
   return (
     <Tag
       className={clsx(
-        "rounded-xl border border-border bg-surface-raised shadow-sm",
-        className
+        "rounded-md border border-border bg-surface-raised",
+        className,
       )}
     >
       {children}
@@ -19,7 +19,13 @@ export function Card({ children, className, as: Tag = "div" }: CardProps) {
   );
 }
 
-export function CardHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardHeader({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div className={clsx("px-5 py-4 border-b border-border-subtle", className)}>
       {children}
@@ -27,16 +33,28 @@ export function CardHeader({ children, className }: { children: React.ReactNode;
   );
 }
 
-export function CardBody({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardBody({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <div className={clsx("px-5 py-4", className)}>{children}</div>;
 }
 
-export function CardFooter({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardFooter({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div
       className={clsx(
-        "px-5 py-3 border-t border-border-subtle bg-surface-sunken/50 rounded-b-xl",
-        className
+        "px-5 py-3 border-t border-border-subtle bg-surface-sunken/50 rounded-b-md",
+        className,
       )}
     >
       {children}

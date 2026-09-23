@@ -8,8 +8,6 @@ import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
-import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
-import { GlassPanel } from "@/components/tools/GlassPanel";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
@@ -77,15 +75,21 @@ const TASK_TYPE_META: Record<
 };
 
 const TASK_TYPE_FRAMING: Record<TaskType, string> = {
-  feature: "This is a new feature request. Describe what needs to be built and the desired end behavior.",
+  feature:
+    "This is a new feature request. Describe what needs to be built and the desired end behavior.",
   bug: "This is a bug fix. Describe the broken behavior and what the fixed, correct behavior should be.",
-  improvement: "This is an improvement to existing functionality. Describe the current gap and what should change.",
-  chore: "This is a chore (cleanup, config, tooling, maintenance). Describe the work plainly, no user-facing framing needed.",
+  improvement:
+    "This is an improvement to existing functionality. Describe the current gap and what should change.",
+  chore:
+    "This is a chore (cleanup, config, tooling, maintenance). Describe the work plainly, no user-facing framing needed.",
 };
 
 // ── System prompt builder ────────────────────────────────────────────────────
 
-function buildSystemPrompt(taskType: TaskType, includeAcceptanceCriteria: boolean): string {
+function buildSystemPrompt(
+  taskType: TaskType,
+  includeAcceptanceCriteria: boolean,
+): string {
   return `You are an expert engineering lead. Your job is to take a rough, informal task idea (often with typos or shorthand) from a developer and turn it into a clean, structured developer task ready to paste into a ticket tracker (e.g. Jira, Linear).
 
 ${TASK_TYPE_FRAMING[taskType]}
@@ -112,7 +116,9 @@ ACCEPTANCE CRITERIA:
 
 function parseTaskOutput(raw: string): ParsedTask | null {
   const titleMatch = raw.match(/title:\s*([\s\S]*?)(?=\n\s*description:|$)/i);
-  const descMatch = raw.match(/description:\s*([\s\S]*?)(?=\n\s*acceptance criteria:|$)/i);
+  const descMatch = raw.match(
+    /description:\s*([\s\S]*?)(?=\n\s*acceptance criteria:|$)/i,
+  );
   const acMatch = raw.match(/acceptance criteria:\s*([\s\S]*)$/i);
 
   const title = titleMatch?.[1]?.trim();
@@ -143,8 +149,10 @@ function formatTaskAsText(task: ParsedTask): string {
 export default function TaskGeneratorPage() {
   const [input, setInput] = useState("");
   const [taskType, setTaskType] = useState<TaskType>("feature");
-  const [includeAcceptanceCriteria, setIncludeAcceptanceCriteria] = useState(false);
-  const { data, loading, error, generate, reset } = useGenerate("task-generator");
+  const [includeAcceptanceCriteria, setIncludeAcceptanceCriteria] =
+    useState(false);
+  const { data, loading, error, generate, reset } =
+    useGenerate("task-generator");
   const lastOptions = useRef<GenerateOptions | null>(null);
 
   const runGenerate = async (options: GenerateOptions) => {
@@ -171,7 +179,10 @@ export default function TaskGeneratorPage() {
     reset();
   };
 
-  const task = useMemo(() => (data ? parseTaskOutput(data.text) : null), [data]);
+  const task = useMemo(
+    () => (data ? parseTaskOutput(data.text) : null),
+    [data],
+  );
   const hasOutput = !!data?.text;
   const copyText = task ? formatTaskAsText(task) : (data?.text ?? "");
   const meta = TASK_TYPE_META[taskType];
@@ -181,14 +192,11 @@ export default function TaskGeneratorPage() {
       title="Task Generator"
       description="Turn a task title or rough idea into a structured developer task"
       icon="ListTodo"
-      color="from-rose-500 to-pink-600"
     >
       <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <ToolMeshBackground colors={["bg-rose-400", "bg-pink-400", "bg-fuchsia-400"]} />
-
         <div className="max-w-3xl mx-auto flex flex-col gap-4">
           {/* Toolbar */}
-          <GlassPanel className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3">
+          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 Type
@@ -198,7 +206,6 @@ export default function TaskGeneratorPage() {
                 value={taskType}
                 onChange={setTaskType}
                 layoutId="tg-type-segment"
-                activeGradient="from-rose-500 to-pink-500"
               />
             </div>
             <label className="flex items-center gap-2.5 cursor-pointer select-none">
@@ -210,21 +217,25 @@ export default function TaskGeneratorPage() {
                 onCheckedChange={setIncludeAcceptanceCriteria}
                 className={clsx(
                   "w-9 h-5 rounded-full transition-colors duration-200 relative shrink-0",
-                  includeAcceptanceCriteria ? "bg-rose-500" : "bg-black/10 dark:bg-white/10"
+                  includeAcceptanceCriteria
+                    ? "bg-accent"
+                    : "bg-black/10 dark:bg-white/10",
                 )}
               >
                 <Switch.Thumb
                   className={clsx(
                     "block w-4 h-4 rounded-full bg-white shadow transition-transform duration-200",
-                    includeAcceptanceCriteria ? "translate-x-4" : "translate-x-0.5"
+                    includeAcceptanceCriteria
+                      ? "translate-x-4"
+                      : "translate-x-0.5",
                   )}
                 />
               </Switch.Root>
             </label>
-          </GlassPanel>
+          </div>
 
           {/* Composer */}
-          <GlassPanel className="overflow-hidden">
+          <div className="rounded-md border border-border bg-surface-raised overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-4 pb-1">
               <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Rough idea
@@ -247,7 +258,7 @@ export default function TaskGeneratorPage() {
               className="w-full px-5 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
               spellCheck={false}
             />
-            <div className="flex items-center justify-between px-5 py-3 border-t border-white/40 dark:border-white/10">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-border-subtle">
               <span className="text-xs text-text-muted tabular-nums truncate min-w-0">
                 {input.trim() ? `${input.trim().length} chars` : " "}
               </span>
@@ -256,37 +267,42 @@ export default function TaskGeneratorPage() {
                 loading={loading}
                 disabled={!input.trim() || loading}
                 icon={TASK_TYPE_OPTIONS.find((o) => o.id === taskType)?.icon}
-                gradient="from-rose-500 to-pink-500"
-                glow="hover:shadow-rose-500/40"
               >
                 {loading ? "Generating…" : "Generate Task"}
               </ToolActionButton>
             </div>
-          </GlassPanel>
+          </div>
 
           {/* Error */}
           {error && (
-            <GlassPanel className="p-4 border-danger/30 bg-danger-subtle/60">
+            <div className="rounded-md border border-danger/30 bg-danger-subtle/60 p-4">
               <p className="text-xs text-danger">{error}</p>
-            </GlassPanel>
+            </div>
           )}
 
           {/* Loading */}
           {loading && (
-            <GlassPanel className="p-6">
+            <div className="rounded-md border border-border bg-surface-raised p-6">
               <SkeletonLines lines={6} />
-            </GlassPanel>
+            </div>
           )}
 
           {/* Empty */}
           {!loading && !hasOutput && !error && (
-            <GlassPanel className="flex flex-col items-center justify-center gap-2 text-center px-8 py-14">
-              <div className="w-11 h-11 rounded-full bg-rose-500/10 flex items-center justify-center">
-                <EmptyIcon className="w-5 h-5 text-rose-500" strokeWidth={1.5} />
+            <div className="rounded-md border border-border bg-surface-raised flex flex-col items-center justify-center gap-2 text-center px-8 py-14">
+              <div className="w-11 h-11 rounded-md border border-border flex items-center justify-center">
+                <EmptyIcon
+                  className="w-5 h-5 text-accent"
+                  strokeWidth={1.5}
+                />
               </div>
-              <p className="text-sm text-text-muted">Your structured ticket will appear here</p>
-              <p className="text-xs text-text-muted/70">Pick a type, describe the idea, then Generate</p>
-            </GlassPanel>
+              <p className="text-sm text-text-muted">
+                Your structured ticket will appear here
+              </p>
+              <p className="text-xs text-text-muted/70">
+                Pick a type, describe the idea, then Generate
+              </p>
+            </div>
           )}
 
           {/* Ticket card */}
@@ -297,14 +313,19 @@ export default function TaskGeneratorPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
               >
-                <GlassPanel className={clsx("overflow-hidden border-l-[4px]", meta.borderClass)}>
+                <div
+                  className={clsx(
+                    "rounded-md border border-border bg-surface-raised overflow-hidden border-l-[4px]",
+                    meta.borderClass,
+                  )}
+                >
                   {/* Ticket header */}
                   <div className="flex items-center justify-between gap-2 px-5 pt-4">
                     <div className="flex items-center gap-2">
                       <span
                         className={clsx(
                           "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide",
-                          meta.badgeClass
+                          meta.badgeClass,
                         )}
                       >
                         {meta.label}
@@ -339,15 +360,21 @@ export default function TaskGeneratorPage() {
                       </div>
 
                       {task.acceptanceCriteria.length > 0 && (
-                        <div className="px-5 pb-4 pt-3 border-t border-white/40 dark:border-white/10">
+                        <div className="px-5 pb-4 pt-3 border-t border-border-subtle">
                           <p className="text-[10px] font-semibold uppercase tracking-wide text-text-muted mb-2">
                             Acceptance Criteria
                           </p>
                           <ul className="flex flex-col gap-2">
                             {task.acceptanceCriteria.map((item, i) => (
-                              <li key={i} className="flex items-start gap-2.5 text-sm text-text-primary leading-relaxed">
+                              <li
+                                key={i}
+                                className="flex items-start gap-2.5 text-sm text-text-primary leading-relaxed"
+                              >
                                 <CheckSquare
-                                  className={clsx("w-4 h-4 mt-0.5 shrink-0", meta.iconClass)}
+                                  className={clsx(
+                                    "w-4 h-4 mt-0.5 shrink-0",
+                                    meta.iconClass,
+                                  )}
                                   strokeWidth={1.75}
                                 />
                                 {item}
@@ -363,10 +390,13 @@ export default function TaskGeneratorPage() {
                     </pre>
                   )}
 
-                  <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
-                    <ProviderBadge provider={data!.provider} model={data!.model} />
+                  <div className="px-5 py-2.5 border-t border-border-subtle">
+                    <ProviderBadge
+                      provider={data!.provider}
+                      model={data!.model}
+                    />
                   </div>
-                </GlassPanel>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

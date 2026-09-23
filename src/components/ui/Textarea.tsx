@@ -26,19 +26,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={inputId}
           className={clsx(
-            "w-full rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-sm text-text-primary placeholder-text-muted resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent disabled:opacity-50",
+            "w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-sm text-text-primary placeholder-text-muted resize-none transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent disabled:opacity-50",
             error && "border-danger focus:ring-danger",
-            className
+            className,
           )}
           {...props}
         />
-        {hint && !error && (
-          <p className="text-xs text-text-muted">{hint}</p>
-        )}
+        {hint && !error && <p className="text-xs text-text-muted">{hint}</p>}
         {error && <p className="text-xs text-danger">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 Textarea.displayName = "Textarea";

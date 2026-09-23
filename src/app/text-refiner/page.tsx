@@ -7,12 +7,9 @@ import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
-import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
-import { GlassPanel } from "@/components/tools/GlassPanel";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
-import { clsx } from "clsx";
 import {
   Users,
   UserCog,
@@ -152,14 +149,11 @@ export default function TextRefinerPage() {
       title="Text Refiner"
       description="Refine messages for clients, managers, and coworkers with selectable tones"
       icon="PenLine"
-      color="from-emerald-500 to-teal-600"
     >
       <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <ToolMeshBackground colors={["bg-emerald-400", "bg-teal-400", "bg-lime-300"]} />
-
         <div className="max-w-4xl mx-auto flex flex-col gap-4">
           {/* Toolbar */}
-          <GlassPanel className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 To
@@ -169,7 +163,6 @@ export default function TextRefinerPage() {
                 value={audience}
                 onChange={setAudience}
                 layoutId="tr-audience-segment"
-                activeGradient="from-emerald-500 to-teal-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -181,13 +174,12 @@ export default function TextRefinerPage() {
                 value={tone}
                 onChange={setTone}
                 layoutId="tr-tone-segment"
-                activeGradient="from-emerald-500 to-teal-500"
               />
             </div>
-          </GlassPanel>
+          </div>
 
           {/* Draft */}
-          <GlassPanel className="overflow-hidden opacity-90">
+          <div className="rounded-md border border-border bg-surface-raised overflow-hidden opacity-90">
             <div className="flex items-center justify-between px-5 pt-4 pb-1">
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-text-muted" />
@@ -213,7 +205,7 @@ export default function TextRefinerPage() {
               className="w-full px-5 py-2 text-sm text-text-secondary placeholder-text-muted bg-transparent resize-none focus:outline-none"
               spellCheck={false}
             />
-            <div className="flex items-center justify-between px-5 py-3 border-t border-white/40 dark:border-white/10">
+            <div className="flex items-center justify-between px-5 py-3 border-t border-border-subtle">
               <span className="text-xs text-text-muted tabular-nums truncate min-w-0">
                 {input.trim() ? `${input.trim().length} chars` : " "}
               </span>
@@ -222,13 +214,11 @@ export default function TextRefinerPage() {
                 loading={loading}
                 disabled={!input.trim() || loading}
                 icon={Sparkles}
-                gradient="from-emerald-500 to-teal-500"
-                glow="hover:shadow-emerald-500/40"
               >
                 {loading ? "Refining…" : "Refine Text"}
               </ToolActionButton>
             </div>
-          </GlassPanel>
+          </div>
 
           {/* Polished */}
           <AnimatePresence initial={false}>
@@ -238,17 +228,11 @@ export default function TextRefinerPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
               >
-                <GlassPanel
-                  className={clsx(
-                    "overflow-hidden transition-shadow duration-300",
-                    hasOutput &&
-                      "ring-1 ring-emerald-400/30 shadow-[0_0_32px_-8px_rgba(16,185,129,0.4)]"
-                  )}
-                >
+                <div className="rounded-md border border-border bg-surface-raised overflow-hidden">
                   <div className="flex items-center justify-between px-5 pt-4 pb-1 gap-2">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                      <Sparkles className="w-3.5 h-3.5 text-accent" />
+                      <span className="text-xs font-semibold uppercase tracking-wide text-accent">
                         Polished
                       </span>
                     </div>
@@ -278,24 +262,31 @@ export default function TextRefinerPage() {
                   </div>
 
                   {hasOutput && (
-                    <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
-                      <ProviderBadge provider={data!.provider} model={data!.model} />
+                    <div className="px-5 py-2.5 border-t border-border-subtle">
+                      <ProviderBadge
+                        provider={data!.provider}
+                        model={data!.model}
+                      />
                     </div>
                   )}
-                </GlassPanel>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
 
           {!loading && !hasOutput && !error && (
-            <GlassPanel className="flex flex-col items-center justify-center gap-2 text-center px-8 py-10 border-dashed">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                <EmptyIcon className="w-4.5 h-4.5 text-emerald-500" strokeWidth={1.5} />
+            <div className="rounded-md border border-border border-dashed bg-surface-raised flex flex-col items-center justify-center gap-2 text-center px-8 py-10">
+              <div className="w-10 h-10 rounded-md border border-border flex items-center justify-center">
+                <EmptyIcon
+                  className="w-4.5 h-4.5 text-accent"
+                  strokeWidth={1.5}
+                />
               </div>
               <p className="text-sm text-text-muted">
-                Pick an audience and tone, then hit Refine to see the polished version
+                Pick an audience and tone, then hit Refine to see the polished
+                version
               </p>
-            </GlassPanel>
+            </div>
           )}
         </div>
       </div>

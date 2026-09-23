@@ -8,8 +8,11 @@ import {
   BookMarked,
   History,
   BrainCircuit,
+  MessageSquare,
+  Settings,
   LucideIcon,
 } from "lucide-react";
+import { clsx } from "clsx";
 import { navItems } from "@/lib/nav-items";
 import type { ToolId } from "@/types";
 
@@ -23,6 +26,8 @@ const iconMap: Record<string, LucideIcon> = {
   BookMarked,
   History,
   BrainCircuit,
+  MessageSquare,
+  Settings,
 };
 
 export function toolLabel(toolId: ToolId): string {
@@ -41,41 +46,49 @@ export function ToolIcon({
   return <Icon className={className} aria-hidden="true" />;
 }
 
-interface SparklineProps {
+interface WeeklyActivityChartProps {
   data: { date: string; count: number }[];
-  width?: number;
-  height?: number;
 }
 
-export function Sparkline({ data, width = 280, height = 56 }: SparklineProps) {
+/** Seven-day bar chart with day-of-week labels — a legible replacement for a raw sparkline. */
+export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
   const max = Math.max(1, ...data.map((d) => d.count));
-  const stepX = data.length > 1 ? width / (data.length - 1) : width;
-  const points = data.map((d, i) => {
-    const x = i * stepX;
-    const y = height - (d.count / max) * (height - 4) - 2;
-    return `${x},${y}`;
-  });
-  const areaPoints = `0,${height} ${points.join(" ")} ${width},${height}`;
+  const total = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="w-full"
-      style={{ height }}
-      preserveAspectRatio="none"
+    <div
+      className="flex items-end gap-2 h-24"
       role="img"
-      aria-label={`${data.reduce((s, d) => s + d.count, 0)} generations over the last ${data.length} days`}
+      aria-label={`${total} generations over the last ${data.length} days`}
     >
-      <polygon points={areaPoints} fill="var(--color-accent-subtle)" />
-      <polyline
-        points={points.join(" ")}
-        fill="none"
-        stroke="var(--color-accent)"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      {data.map((d) => {
+        const dayLabel = new Date(`${d.date}T00:00:00`).toLocaleDateString(
+          undefined,
+          { weekday: "narrow" },
+        );
+        const heightPct = d.count > 0 ? Math.max((d.count / max) * 100, 8) : 0;
+        return (
+          <div
+            key={d.date}
+            className="flex flex-1 flex-col items-center gap-1.5 h-full"
+          >
+            <div className="flex-1 w-full flex items-end justify-center">
+              <div
+                title={`${d.count} on ${d.date}`}
+                className={clsx(
+                  "w-full max-w-3.5 rounded-[2px] transition-[height] duration-300",
+                  d.count > 0 ? "bg-accent" : "bg-surface-sunken",
+                )}
+                style={{ height: `${d.count > 0 ? heightPct : 4}%` }}
+              />
+            </div>
+            <span className="text-[9px] font-medium uppercase text-text-muted">
+              {dayLabel}
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

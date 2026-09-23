@@ -71,7 +71,6 @@ export default function CommandLibraryPage() {
         title="Command Library"
         description="Save and search terminal, Git, Flutter, and Xcode commands, shortcuts, and snippets"
         icon="Terminal"
-        color="from-slate-500 to-zinc-600"
       >
         <div className="flex flex-col h-full gap-4">
           {/* Toolbar */}
@@ -97,7 +96,7 @@ export default function CommandLibraryPage() {
                   onClick={() => setCategoryFilter(value)}
                   className={
                     categoryFilter === value
-                      ? "px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-600 text-white"
+                      ? "px-3 py-1.5 rounded-lg text-xs font-medium bg-accent text-white"
                       : "px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-sunken text-text-secondary hover:bg-border transition-colors"
                   }
                 >
@@ -125,8 +124,8 @@ export default function CommandLibraryPage() {
             ) : commands.length === 0 ? (
               /* True empty state */
               <div className="flex flex-col items-center justify-center h-64 gap-3 text-center">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center">
-                  <Terminal className="w-6 h-6 text-slate-500" />
+                <div className="w-12 h-12 rounded-md border border-border flex items-center justify-center">
+                  <Terminal className="w-6 h-6 text-accent" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-text-secondary">

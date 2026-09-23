@@ -17,7 +17,6 @@ export interface NavItem {
   href: string;
   icon: string;
   description: string;
-  color: string;
 }
 
 export type InstructionCategory =

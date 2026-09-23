@@ -10,8 +10,6 @@ interface SegmentedControlProps<T extends string> {
   onChange: (id: T) => void;
   /** Unique per control instance — framer-motion groups the sliding highlight by this id */
   layoutId: string;
-  /** Literal Tailwind gradient classes for the active pill, e.g. "from-amber-500 to-orange-500" */
-  activeGradient: string;
 }
 
 export function SegmentedControl<T extends string>({
@@ -19,10 +17,9 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
   layoutId,
-  activeGradient,
 }: SegmentedControlProps<T>) {
   return (
-    <div className="flex items-center gap-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06] p-1 overflow-x-auto">
+    <div className="flex items-center gap-0.5 rounded-md border border-border bg-surface-sunken p-0.5 overflow-x-auto">
       {options.map((opt) => {
         const Icon = opt.icon;
         const active = value === opt.id;
@@ -31,17 +28,16 @@ export function SegmentedControl<T extends string>({
             key={opt.id}
             onClick={() => onChange(opt.id)}
             className={clsx(
-              "relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer",
-              active ? "text-white" : "text-text-secondary hover:text-text-primary"
+              "relative flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer",
+              active
+                ? "text-white"
+                : "text-text-secondary hover:text-text-primary",
             )}
           >
             {active && (
               <motion.span
                 layoutId={layoutId}
-                className={clsx(
-                  "absolute inset-0 rounded-full bg-gradient-to-r shadow-sm",
-                  activeGradient
-                )}
+                className="absolute inset-0 rounded-[3px] bg-accent"
                 transition={{ type: "spring", stiffness: 500, damping: 35 }}
               />
             )}

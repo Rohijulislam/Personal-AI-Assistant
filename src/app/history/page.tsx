@@ -29,7 +29,6 @@ export default function HistoryPage() {
       title="History"
       description="Recently generated results across all tools"
       icon="History"
-      color="from-stone-500 to-neutral-600"
     >
       <div className="max-w-2xl mx-auto space-y-4 h-full overflow-y-auto pb-6">
         {hydrated && entries.length > 0 && (
@@ -70,7 +69,7 @@ export default function HistoryPage() {
                 <Card key={entry.id}>
                   <CardBody>
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-surface-sunken flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-[5px] bg-surface-sunken flex items-center justify-center shrink-0">
                         <ToolIcon toolId={entry.toolId} className="w-4 h-4 text-text-muted" />
                       </div>
                       <div className="min-w-0 flex-1">

@@ -7,12 +7,9 @@ import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { SkeletonLines } from "@/components/ui/Skeleton";
-import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
-import { GlassPanel } from "@/components/tools/GlassPanel";
 import { ToolActionButton } from "@/components/tools/ToolActionButton";
 import { SegmentedControl } from "@/components/tools/SegmentedControl";
 import { useGenerate } from "@/lib/hooks/useGenerate";
-import { clsx } from "clsx";
 import {
   Sparkles,
   Bot,
@@ -110,7 +107,8 @@ export default function PromptRewriterPage() {
   const [input, setInput] = useState("");
   const [model, setModel] = useState<TargetModel>("claude");
   const [style, setStyle] = useState<PromptStyle>("detailed");
-  const { data, loading, error, generate, reset } = useGenerate("prompt-rewriter");
+  const { data, loading, error, generate, reset } =
+    useGenerate("prompt-rewriter");
   const lastOptions = useRef<GenerateOptions | null>(null);
 
   const runGenerate = async (options: GenerateOptions) => {
@@ -144,14 +142,11 @@ export default function PromptRewriterPage() {
       title="Prompt Rewriter"
       description="Improve rough prompts for clearer and better AI output"
       icon="Wand2"
-      color="from-amber-500 to-orange-600"
     >
       <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <ToolMeshBackground colors={["bg-amber-400", "bg-orange-500", "bg-rose-400"]} />
-
         <div className="max-w-5xl mx-auto flex flex-col gap-4">
           {/* Toolbar */}
-          <GlassPanel className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
+          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 For
@@ -161,7 +156,6 @@ export default function PromptRewriterPage() {
                 value={model}
                 onChange={setModel}
                 layoutId="pr-model-segment"
-                activeGradient="from-amber-500 to-orange-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -173,15 +167,14 @@ export default function PromptRewriterPage() {
                 value={style}
                 onChange={setStyle}
                 layoutId="pr-style-segment"
-                activeGradient="from-amber-500 to-orange-500"
               />
             </div>
-          </GlassPanel>
+          </div>
 
           {/* Transform layout */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_60px_1fr] gap-4 items-stretch">
             {/* Input */}
-            <GlassPanel className="flex flex-col overflow-hidden">
+            <div className="rounded-md border border-border bg-surface-raised flex flex-col overflow-hidden">
               <div className="flex items-center justify-between px-5 pt-4 pb-1">
                 <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Rough prompt
@@ -204,10 +197,10 @@ export default function PromptRewriterPage() {
                 className="flex-1 w-full px-5 py-2 text-sm text-text-primary placeholder-text-muted bg-transparent resize-none focus:outline-none"
                 spellCheck={false}
               />
-              <div className="px-5 py-3 text-xs text-text-muted tabular-nums border-t border-white/40 dark:border-white/10">
+              <div className="px-5 py-3 text-xs text-text-muted tabular-nums border-t border-border-subtle">
                 {input.trim() ? `${input.trim().length} chars` : " "}
               </div>
-            </GlassPanel>
+            </div>
 
             {/* Transform button */}
             <div className="flex lg:flex-col items-center justify-center gap-2 py-2 lg:py-0">
@@ -216,22 +209,17 @@ export default function PromptRewriterPage() {
                 loading={loading}
                 disabled={!input.trim() || loading}
                 icon={ArrowRight}
-                gradient="from-amber-500 to-orange-500"
-                glow="hover:shadow-orange-500/50"
                 className="rounded-full! p-0! w-14! h-14!"
               >
                 <span className="sr-only">Refine Prompt</span>
               </ToolActionButton>
-              <span className="text-[10px] font-medium text-text-muted hidden lg:block">Refine</span>
+              <span className="text-[10px] font-medium text-text-muted hidden lg:block">
+                Refine
+              </span>
             </div>
 
             {/* Output */}
-            <GlassPanel
-              className={clsx(
-                "flex flex-col overflow-hidden transition-shadow duration-300",
-                hasOutput && "ring-1 ring-amber-400/30 shadow-[0_0_32px_-8px_rgba(245,158,11,0.4)]"
-              )}
-            >
+            <div className="rounded-md border border-border bg-surface-raised flex flex-col overflow-hidden">
               <div className="flex items-center justify-between px-5 pt-4 pb-1 gap-2">
                 <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Refined prompt
@@ -271,20 +259,25 @@ export default function PromptRewriterPage() {
 
                 {!loading && !hasOutput && !error && (
                   <div className="h-full flex flex-col items-center justify-center gap-2 text-center py-8">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <Sparkles className="w-4.5 h-4.5 text-amber-500" strokeWidth={1.5} />
+                    <div className="w-10 h-10 rounded-md border border-border flex items-center justify-center">
+                      <Sparkles
+                        className="w-4.5 h-4.5 text-accent"
+                        strokeWidth={1.5}
+                      />
                     </div>
-                    <p className="text-sm text-text-muted">Ready to paste into Claude or ChatGPT</p>
+                    <p className="text-sm text-text-muted">
+                      Ready to paste into Claude or ChatGPT
+                    </p>
                   </div>
                 )}
               </div>
 
               {hasOutput && (
-                <div className="px-5 py-2.5 border-t border-white/40 dark:border-white/10">
+                <div className="px-5 py-2.5 border-t border-border-subtle">
                   <ProviderBadge provider={data.provider} model={data.model} />
                 </div>
               )}
-            </GlassPanel>
+            </div>
           </div>
         </div>
       </div>

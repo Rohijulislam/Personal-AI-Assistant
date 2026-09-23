@@ -9,10 +9,7 @@ export function Skeleton({ className, style }: SkeletonProps) {
   return (
     <div
       style={style}
-      className={clsx(
-        "animate-pulse rounded-md bg-surface-sunken",
-        className
-      )}
+      className={clsx("animate-pulse rounded-md bg-surface-sunken", className)}
     />
   );
 }

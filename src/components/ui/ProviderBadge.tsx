@@ -11,13 +11,11 @@ const PROVIDER_LABEL: Record<GenerateResult["provider"], string> = {
   groq: "Groq",
 };
 
-const PROVIDER_VARIANT: Record<
-  GenerateResult["provider"],
-  "info" | "default"
-> = {
-  gemini: "info",
-  groq: "default",
-};
+const PROVIDER_VARIANT: Record<GenerateResult["provider"], "info" | "default"> =
+  {
+    gemini: "info",
+    groq: "default",
+  };
 
 export function ProviderBadge({ provider, model }: ProviderBadgeProps) {
   return (

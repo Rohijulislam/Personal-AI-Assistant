@@ -29,7 +29,7 @@ export function CopyButton({ text, className }: CopyButtonProps) {
         copied
           ? "bg-success-subtle text-success"
           : "bg-surface-sunken text-text-secondary hover:bg-border",
-        className
+        className,
       )}
     >
       <AnimatePresence mode="wait" initial={false}>

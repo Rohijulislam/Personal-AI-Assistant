@@ -15,7 +15,6 @@ import {
   BookMarked,
   History,
   Settings,
-  Sparkles,
   Search,
   Sun,
   Moon,
@@ -82,8 +81,8 @@ export function Sidebar() {
 
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-4 border-b border-border">
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center shrink-0 shadow-[0_2px_8px_-2px_rgba(124,58,237,0.6)]">
-          <Sparkles className="w-3.5 h-3.5 text-white" />
+        <div className="w-7 h-7 rounded-[5px] bg-accent flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-white leading-none">A</span>
         </div>
         <div className={clsx("min-w-0 hidden", !collapsed && "lg:block")}>
           <span className="block text-sm font-semibold text-text-primary tracking-tight truncate">

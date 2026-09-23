@@ -17,14 +17,19 @@ const variantClasses: Record<BadgeVariant, string> = {
   info: "bg-info-subtle text-info",
 };
 
-export function Badge({ children, variant = "default", className, title }: BadgeProps) {
+export function Badge({
+  children,
+  variant = "default",
+  className,
+  title,
+}: BadgeProps) {
   return (
     <span
       title={title}
       className={clsx(
-        "inline-flex items-center whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-medium",
+        "inline-flex items-center whitespace-nowrap px-1.5 py-0.5 rounded-[3px] text-xs font-medium",
         variantClasses[variant],
-        className
+        className,
       )}
     >
       {children}

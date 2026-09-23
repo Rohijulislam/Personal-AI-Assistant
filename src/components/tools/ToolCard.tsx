@@ -13,7 +13,6 @@ import {
   MessageSquare,
   LucideIcon,
 } from "lucide-react";
-import { clsx } from "clsx";
 import type { NavItem } from "@/types";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -40,25 +39,19 @@ export function ToolCard({ item }: ToolCardProps) {
   return (
     <Link
       href={item.href}
-      className="group block rounded-xl border border-border bg-surface-raised p-5 shadow-sm hover:shadow-md hover:border-text-muted transition-all duration-200"
+      className="group flex items-center gap-3 rounded-md border border-border bg-surface-raised px-3.5 py-3 hover:border-accent/50 transition-colors duration-150"
     >
-      <div className="flex items-start gap-4">
-        <div
-          className={clsx(
-            "flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center",
-            item.color,
-          )}
-        >
-          <Icon className="w-5 h-5 text-white" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
-            {item.label}
-          </h3>
-          <p className="mt-0.5 text-xs text-text-muted leading-relaxed">
-            {item.description}
-          </p>
-        </div>
+      <div className="flex-shrink-0 w-8 h-8 rounded-[5px] border border-border flex items-center justify-center group-hover:border-accent/50 transition-colors duration-150">
+        <Icon
+          className="w-3.5 h-3.5 text-text-secondary group-hover:text-accent transition-colors"
+          aria-hidden="true"
+        />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+          {item.label}
+        </h3>
+        <p className="text-xs text-text-muted truncate">{item.description}</p>
       </div>
     </Link>
   );

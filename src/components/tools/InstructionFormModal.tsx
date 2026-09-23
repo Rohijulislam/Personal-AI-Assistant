@@ -116,7 +116,7 @@ export function InstructionFormModal({
             e.preventDefault();
             titleRef.current?.focus();
           }}
-          className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 bg-surface-raised rounded-2xl shadow-xl border border-border flex flex-col max-h-[90vh] data-[state=open]:animate-[dialog-in-center_0.15s_ease-out]"
+          className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 bg-surface-raised rounded-md shadow-xl border border-border flex flex-col max-h-[90vh] data-[state=open]:animate-[dialog-in-center_0.15s_ease-out]"
         >
           <Dialog.Title className="sr-only">
             {instruction ? "Edit Instruction" : "New Instruction"}
@@ -270,7 +270,7 @@ export function InstructionFormModal({
           </form>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-border-subtle bg-surface-sunken/50 rounded-b-2xl">
+          <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-border-subtle bg-surface-sunken/50 rounded-b-md">
             <Dialog.Close asChild>
               <Button variant="secondary" size="sm" type="button">
                 Cancel

@@ -16,7 +16,6 @@ import {
   MessageSquare,
   LucideIcon,
 } from "lucide-react";
-import { clsx } from "clsx";
 import { useAppUI } from "@/components/layout/AppUIProvider";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -37,7 +36,6 @@ interface PageShellProps {
   title: string;
   description: string;
   icon: string;
-  color: string;
   children: React.ReactNode;
 }
 
@@ -45,7 +43,6 @@ export function PageShell({
   title,
   description,
   icon,
-  color,
   children,
 }: PageShellProps) {
   const Icon = iconMap[icon] ?? LayoutDashboard;
@@ -62,18 +59,13 @@ export function PageShell({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="sm:hidden -ml-1 p-1.5 rounded-lg text-text-muted hover:bg-surface-sunken"
+            className="sm:hidden -ml-1 p-1.5 rounded-md text-text-muted hover:bg-surface-sunken"
             aria-label="Open navigation"
           >
             <Menu className="w-5 h-5" />
           </button>
-          <div
-            className={clsx(
-              "flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br flex items-center justify-center",
-              color,
-            )}
-          >
-            <Icon className="w-4.5 h-4.5 text-white" aria-hidden="true" />
+          <div className="flex-shrink-0 w-8 h-8 rounded-[5px] border border-border flex items-center justify-center">
+            <Icon className="w-4 h-4 text-accent" aria-hidden="true" />
           </div>
           <div>
             <h1 className="text-base font-semibold text-text-primary">

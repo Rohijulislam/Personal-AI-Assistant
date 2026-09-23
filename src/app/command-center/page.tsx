@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
-import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
 import { clsx } from "clsx";
@@ -68,37 +67,32 @@ type Message = UserMessage | AssistantMessage;
 
 const TOOL_META: Record<
   ToolName,
-  { label: string; icon: React.ElementType; color: string; gradient: string }
+  { label: string; icon: React.ElementType; color: string }
 > = {
   daily_status: {
     label: "Daily Status",
     icon: ClipboardList,
-    color: "text-blue-500",
-    gradient: "from-blue-500 to-cyan-500",
+    color: "text-accent",
   },
   prompt_rewriter: {
     label: "Prompt Rewriter",
     icon: Wand2,
-    color: "text-amber-500",
-    gradient: "from-amber-500 to-orange-500",
+    color: "text-accent",
   },
   text_refiner: {
     label: "Text Refiner",
     icon: PenLine,
-    color: "text-emerald-500",
-    gradient: "from-emerald-500 to-teal-500",
+    color: "text-accent",
   },
   task_generator: {
     label: "Task Generator",
     icon: ListTodo,
-    color: "text-rose-500",
-    gradient: "from-rose-500 to-pink-500",
+    color: "text-accent",
   },
   direct_reply: {
     label: "Assistant",
     icon: Sparkles,
-    color: "text-violet-500",
-    gradient: "from-violet-500 to-fuchsia-500",
+    color: "text-accent",
   },
 };
 
@@ -693,13 +687,8 @@ export default function CommandCenterPage() {
       title="Command Center"
       description="Describe what you need — the assistant picks the right tool automatically"
       icon="BrainCircuit"
-      color="from-violet-500 to-fuchsia-600"
     >
       <div className="relative h-full flex flex-col -m-6 min-h-0">
-        <ToolMeshBackground
-          colors={["bg-violet-500", "bg-fuchsia-500", "bg-indigo-500"]}
-        />
-
         {/* ── Message thread ───────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 min-h-0">
           {/* Empty state */}
@@ -715,8 +704,8 @@ export default function CommandCenterPage() {
               >
                 {/* Icon */}
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-[0_0_40px_-8px_rgba(139,92,246,0.7)]">
-                    <BrainCircuit className="w-8 h-8 text-white" />
+                  <div className="w-16 h-16 rounded-md border border-border flex items-center justify-center">
+                    <BrainCircuit className="w-8 h-8 text-accent" />
                   </div>
                   <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-success border-2 border-surface-raised" />
                 </div>
@@ -743,7 +732,7 @@ export default function CommandCenterPage() {
                         key={s.label}
                         onClick={() => fillInput(s.prompt)}
                         disabled={isRunning}
-                        className="w-full text-left px-4 py-2.5 rounded-xl border border-border bg-surface-raised/80 backdrop-blur-sm text-sm text-text-secondary hover:text-text-primary hover:border-accent/40 hover:bg-accent-subtle transition-all duration-150 disabled:opacity-50 group"
+                        className="w-full text-left px-4 py-2.5 rounded-md border border-border bg-surface-raised text-sm text-text-secondary hover:text-text-primary hover:border-accent/40 hover:bg-accent-subtle transition-all duration-150 disabled:opacity-50 group"
                       >
                         <span className="font-medium">{s.label}</span>
                       </button>
@@ -787,7 +776,7 @@ export default function CommandCenterPage() {
 
         {/* ── Toolbar: clear + stop ────────────────────────────────────────── */}
         {messages.length > 0 && (
-          <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-t border-border/40 bg-surface/60 backdrop-blur-sm">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-t border-border bg-surface-raised">
             <button
               onClick={clearAll}
               disabled={isRunning}
@@ -809,13 +798,13 @@ export default function CommandCenterPage() {
         )}
 
         {/* ── Input bar ────────────────────────────────────────────────────── */}
-        <div className="px-4 sm:px-6 py-4 border-t border-border/60 bg-surface/90 backdrop-blur-xl">
+        <div className="px-4 sm:px-6 py-4 border-t border-border bg-surface">
           <div
             className={clsx(
-              "flex items-end gap-3 rounded-2xl border bg-surface-raised px-4 py-3 transition-all duration-200 shadow-sm",
+              "flex items-end gap-3 rounded-md border bg-surface-raised px-4 py-3 transition-all duration-200",
               isRunning
-                ? "border-accent/40 shadow-[0_0_0_3px_rgba(139,92,246,0.1)]"
-                : "border-border hover:border-border-subtle focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(139,92,246,0.08)]",
+                ? "border-accent/40"
+                : "border-border hover:border-border-subtle focus-within:border-accent",
             )}
           >
             <textarea
@@ -841,9 +830,9 @@ export default function CommandCenterPage() {
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim() || isRunning}
                 className={clsx(
-                  "flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-150",
+                  "flex items-center justify-center w-9 h-9 rounded-md transition-all duration-150",
                   input.trim() && !isRunning
-                    ? "bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0 active:shadow-sm"
+                    ? "bg-accent hover:bg-accent-hover text-white"
                     : "bg-surface-sunken text-text-muted cursor-not-allowed",
                 )}
                 aria-label="Send"
@@ -902,7 +891,7 @@ function UserBubble({
   return (
     <div className="flex justify-end gap-2 group">
       <div className="relative max-w-[80%] sm:max-w-[65%]">
-        <div className="rounded-2xl rounded-tr-sm bg-gradient-to-br from-violet-500 to-fuchsia-600 px-4 py-2.5 shadow-md shadow-violet-500/20">
+        <div className="rounded-md rounded-tr-sm bg-accent px-4 py-2.5">
           <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">
             {message.text}
           </p>
@@ -942,13 +931,8 @@ function AssistantBubble({
   return (
     <div className="flex justify-start gap-3 group">
       {/* Avatar */}
-      <div
-        className={clsx(
-          "shrink-0 w-8 h-8 rounded-xl flex items-center justify-center shadow-sm mt-0.5 bg-gradient-to-br",
-          toolMeta.gradient,
-        )}
-      >
-        <ToolIcon className="w-4 h-4 text-white" aria-hidden="true" />
+      <div className="shrink-0 w-8 h-8 rounded-md flex items-center justify-center mt-0.5 bg-surface-sunken border border-border">
+        <ToolIcon className="w-4 h-4 text-text-secondary" aria-hidden="true" />
       </div>
 
       {/* Bubble */}
@@ -959,7 +943,7 @@ function AssistantBubble({
             <span
               className={clsx(
                 "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide border",
-                "bg-surface-raised/80 backdrop-blur-sm border-border text-text-muted",
+                "bg-surface-raised border-border text-text-muted",
               )}
             >
               <ToolIcon className={clsx("w-3 h-3", toolMeta.color)} />
@@ -970,8 +954,8 @@ function AssistantBubble({
 
         <div
           className={clsx(
-            "rounded-2xl rounded-tl-sm border bg-surface-raised/80 backdrop-blur-xl shadow-sm overflow-hidden",
-            message.error ? "border-danger/30" : "border-border/60",
+            "rounded-md rounded-tl-sm border bg-surface-raised overflow-hidden",
+            message.error ? "border-danger/30" : "border-border",
           )}
         >
           {/* Loading state — pulsing dots before first token arrives */}
@@ -996,7 +980,7 @@ function AssistantBubble({
 
           {/* Error */}
           {message.error && (
-            <div className="flex items-start gap-2.5 m-3 p-3 rounded-xl bg-danger-subtle border border-danger/20">
+            <div className="flex items-start gap-2.5 m-3 p-3 rounded-md bg-danger-subtle border border-danger/20">
               <span className="text-xs font-semibold text-danger mt-0.5 shrink-0">
                 Error
               </span>

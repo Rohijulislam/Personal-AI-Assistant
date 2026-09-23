@@ -1,32 +1,90 @@
 "use client";
 
-import { useEffect } from "react";
-import { navItems } from "@/lib/nav-items";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { clsx } from "clsx";
+import { navItems, navGroups } from "@/lib/nav-items";
 import { ToolCard } from "@/components/tools/ToolCard";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
-import { Sparkline, ToolBarBreakdown } from "@/components/tools/UsageCharts";
+import { Skeleton, SkeletonLines } from "@/components/ui/Skeleton";
+import {
+  WeeklyActivityChart,
+  ToolBarBreakdown,
+  ToolIcon,
+  toolLabel,
+} from "@/components/tools/UsageCharts";
 import { useUsageLog } from "@/lib/hooks/useUsageLog";
 import { useCommandLibrary } from "@/lib/hooks/useCommandLibrary";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
-import { lastNDaysCounts, toolCounts } from "@/lib/usage-stats";
+import {
+  lastNDaysCounts,
+  toolCounts,
+  weekOverWeek,
+  relativeTimeFromNow,
+} from "@/lib/usage-stats";
 import { useAppUI } from "@/components/layout/AppUIProvider";
-import { Menu, Zap, Terminal, BookMarked } from "lucide-react";
+import {
+  Menu,
+  Zap,
+  Terminal,
+  BookMarked,
+  TrendingUp,
+  TrendingDown,
+  ArrowRight,
+} from "lucide-react";
 
-// Dashboard shows all tools except itself
-const tools = navItems.filter((item) => item.id !== "dashboard");
+function getGreeting(hour: number): string {
+  if (hour < 5) return "Good night";
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 export default function DashboardPage() {
-  const { entries } = useUsageLog();
-  const { commands } = useCommandLibrary();
-  const { instructions } = useSavedInstructions();
+  const { entries, hydrated: usageHydrated } = useUsageLog();
+  const { commands, hydrated: commandsHydrated } = useCommandLibrary();
+  const { instructions, hydrated: instructionsHydrated } =
+    useSavedInstructions();
   const { setMobileNavOpen } = useAppUI();
-  const dailyCounts = lastNDaysCounts(entries, 7);
-  const totalThisWeek = dailyCounts.reduce((sum, d) => sum + d.count, 0);
-  const topTools = toolCounts(entries, 7).slice(0, 3);
+  const [mounted, setMounted] = useState(false);
+
+  const ready = usageHydrated && commandsHydrated && instructionsHydrated;
 
   useEffect(() => {
     document.title = "Dashboard · My Assistant";
   }, []);
+
+  useEffect(() => {
+    // Greeting/date depend on the viewer's local clock — render a static
+    // fallback on the server and swap in after mount to avoid a hydration
+    // mismatch (same pattern as the sidebar's theme toggle).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  const now = new Date();
+  const dailyCounts = lastNDaysCounts(entries, 7);
+  const totalThisWeek = dailyCounts.reduce((sum, d) => sum + d.count, 0);
+  const topTools = toolCounts(entries, 7).slice(0, 3);
+  const { thisWeek, lastWeek } = weekOverWeek(entries);
+  const weekDelta = thisWeek - lastWeek;
+  const recent = entries.slice(0, 3);
+
+  // The sidebar splits "Start here" (dashboard/command-center/chat) from
+  // "AI Tools" for a short, scannable nav list — but on the dashboard grid
+  // those read as one flat set of tools, so merge them into a single section.
+  const dashboardGroups = [
+    { label: "AI Tools", ids: [...navGroups[0].ids, ...navGroups[1].ids] },
+    ...navGroups.slice(2),
+  ];
+  const toolGroups = dashboardGroups
+    .map((group) => ({
+      label: group.label,
+      items: navItems.filter(
+        (item) => group.ids.includes(item.id) && item.id !== "dashboard",
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <div className="flex flex-col h-full">
@@ -34,17 +92,23 @@ export default function DashboardPage() {
       <div className="flex items-center gap-3 px-4 sm:px-6 py-5 border-b border-border bg-surface-raised">
         <button
           onClick={() => setMobileNavOpen(true)}
-          className="sm:hidden -ml-1 p-1.5 rounded-lg text-text-muted hover:bg-surface-sunken"
+          className="sm:hidden -ml-1 p-1.5 rounded-md text-text-muted hover:bg-surface-sunken"
           aria-label="Open navigation"
         >
           <Menu className="w-5 h-5" />
         </button>
         <div>
           <h1 className="text-base font-semibold text-text-primary">
-            Dashboard
+            {mounted ? `${getGreeting(now.getHours())}` : "Dashboard"}
           </h1>
           <p className="text-xs text-text-muted mt-0.5">
-            Your personal AI toolkit — pick a tool to get started.
+            {mounted
+              ? now.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "Your personal AI toolkit — pick a tool to get started."}
           </p>
         </div>
       </div>
@@ -52,38 +116,109 @@ export default function DashboardPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-6xl mx-auto flex flex-col gap-6">
-          {/* Stats strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            <StatCard
-              icon={Zap}
-              accent="from-violet-500 to-purple-600"
-              value={entries.length}
-              label="Generations"
-            />
-            <StatCard
-              icon={Terminal}
-              accent="from-slate-500 to-zinc-600"
-              value={commands.length}
-              label="Saved commands"
-            />
-            <StatCard
-              icon={BookMarked}
-              accent="from-indigo-500 to-blue-600"
-              value={instructions.length}
-              label="Saved instructions"
-            />
+          {/* Overview — deliberately low-key: small chips, not a headline stat block */}
+          <div className="flex flex-wrap items-center gap-2">
+            {!ready ? (
+              <>
+                <Skeleton className="h-7 w-32 rounded-md" />
+                <Skeleton className="h-7 w-36 rounded-md" />
+                <Skeleton className="h-7 w-36 rounded-md" />
+              </>
+            ) : (
+              <>
+                <OverviewStat
+                  icon={Zap}
+                  label="Generations"
+                  value={entries.length}
+                  trend={
+                    thisWeek > 0 || lastWeek > 0 ? (
+                      <TrendChip delta={weekDelta} />
+                    ) : undefined
+                  }
+                />
+                <OverviewStat
+                  icon={Terminal}
+                  label="Saved commands"
+                  value={commands.length}
+                />
+                <OverviewStat
+                  icon={BookMarked}
+                  label="Saved instructions"
+                  value={instructions.length}
+                />
+              </>
+            )}
           </div>
 
           <div className="flex flex-col xl:flex-row gap-6 items-start">
-            {/* Tool grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 flex-1 w-full">
-              {tools.map((item) => (
-                <ToolCard key={item.id} item={item} />
+            {/* Tool grid, grouped to match the sidebar's information architecture */}
+            <div className="flex flex-col gap-6 flex-1 w-full">
+              {toolGroups.map((group, i) => (
+                <div key={i} className="flex flex-col gap-3">
+                  <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted px-0.5">
+                    {group.label}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {group.items.map((item) => (
+                      <ToolCard key={item.id} item={item} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
 
             {/* Usage panel */}
-            <div className="w-full xl:w-72 shrink-0 flex flex-col gap-4">
+            <div className="w-full xl:w-80 shrink-0 flex flex-col gap-4">
+              <Card>
+                <CardHeader className="flex items-center justify-between gap-2">
+                  <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    Recent activity
+                  </h2>
+                  {ready && entries.length > 0 && (
+                    <Link
+                      href="/history"
+                      className="inline-flex items-center gap-0.5 text-xs text-accent hover:underline shrink-0"
+                    >
+                      View all
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  )}
+                </CardHeader>
+                <CardBody className="flex flex-col gap-3">
+                  {!ready ? (
+                    <SkeletonLines lines={3} />
+                  ) : recent.length === 0 ? (
+                    <p className="text-xs text-text-muted">
+                      Nothing yet — run a tool and it&apos;ll show up here.
+                    </p>
+                  ) : (
+                    recent.map((entry) => (
+                      <div key={entry.id} className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-[5px] border border-border flex items-center justify-center shrink-0">
+                          <ToolIcon
+                            toolId={entry.toolId}
+                            className="w-3.5 h-3.5 text-text-secondary"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-medium text-text-primary truncate">
+                              {toolLabel(entry.toolId)}
+                            </span>
+                            <span className="text-[10px] text-text-muted shrink-0 tabular-nums">
+                              {relativeTimeFromNow(entry.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-text-muted truncate mt-0.5">
+                            {entry.text}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </CardBody>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <h2 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -91,11 +226,14 @@ export default function DashboardPage() {
                   </h2>
                 </CardHeader>
                 <CardBody>
-                  {totalThisWeek > 0 ? (
+                  {!ready ? (
+                    <Skeleton className="h-24" />
+                  ) : totalThisWeek > 0 ? (
                     <>
-                      <Sparkline data={dailyCounts} />
-                      <p className="mt-2 text-xs text-text-muted">
-                        {totalThisWeek} generation{totalThisWeek === 1 ? "" : "s"} this week
+                      <WeeklyActivityChart data={dailyCounts} />
+                      <p className="mt-2.5 text-xs text-text-muted">
+                        {totalThisWeek} generation
+                        {totalThisWeek === 1 ? "" : "s"} this week
                       </p>
                     </>
                   ) : (
@@ -113,7 +251,11 @@ export default function DashboardPage() {
                   </h2>
                 </CardHeader>
                 <CardBody>
-                  <ToolBarBreakdown data={topTools} />
+                  {!ready ? (
+                    <SkeletonLines lines={3} />
+                  ) : (
+                    <ToolBarBreakdown data={topTools} />
+                  )}
                 </CardBody>
               </Card>
             </div>
@@ -124,30 +266,42 @@ export default function DashboardPage() {
   );
 }
 
-function StatCard({
+function TrendChip({ delta }: { delta: number }) {
+  if (delta === 0) return null;
+  const positive = delta > 0;
+  const Icon = positive ? TrendingUp : TrendingDown;
+  return (
+    <span
+      className={clsx(
+        "inline-flex items-center gap-0.5 text-[10px] font-semibold tabular-nums",
+        positive ? "text-success" : "text-danger",
+      )}
+    >
+      <Icon className="w-2.5 h-2.5" />
+      {Math.abs(delta)}
+    </span>
+  );
+}
+
+function OverviewStat({
   icon: Icon,
-  accent,
   value,
   label,
+  trend,
 }: {
   icon: React.ComponentType<{ className?: string }>;
-  accent: string;
   value: number;
   label: string;
+  trend?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-surface-raised px-4 py-3.5 shadow-sm">
-      <div
-        className={`flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${accent} flex items-center justify-center`}
-      >
-        <Icon className="w-4 h-4 text-white" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-lg font-semibold text-text-primary tabular-nums leading-tight">
-          {value}
-        </p>
-        <p className="text-xs text-text-muted truncate">{label}</p>
-      </div>
-    </div>
+    <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-sunken px-2.5 py-1.5 text-xs">
+      <Icon className="w-3.5 h-3.5 text-accent shrink-0" />
+      <span className="font-semibold text-text-primary tabular-nums font-mono">
+        {value}
+      </span>
+      <span className="text-text-muted">{label}</span>
+      {trend}
+    </span>
   );
 }

@@ -62,7 +62,7 @@ export function CommandPalette() {
       open={commandPaletteOpen}
       onOpenChange={setCommandPaletteOpen}
       label="Command palette"
-      className="fixed left-1/2 top-24 z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-lg"
+      className="fixed left-1/2 top-24 z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-md border border-border bg-surface-raised shadow-lg"
       overlayClassName="fixed inset-0 z-50 bg-black/40"
       contentClassName="p-0"
     >

@@ -156,7 +156,7 @@ export function InstructionCard({
     <Card
       className={clsx(
         "transition-shadow duration-150 hover:shadow-md",
-        instruction.pinned && "ring-1 ring-indigo-400/40",
+        instruction.pinned && "ring-1 ring-accent/40",
         isCredential && !revealed && "ring-1 ring-danger/30",
       )}
     >
@@ -169,7 +169,7 @@ export function InstructionCard({
             </span>
             {instruction.pinned && (
               <Pin
-                className="w-3.5 h-3.5 text-indigo-500 shrink-0"
+                className="w-3.5 h-3.5 text-accent shrink-0"
                 aria-label="Pinned"
               />
             )}
@@ -190,7 +190,7 @@ export function InstructionCard({
               onClick={() => onTogglePin(instruction.id)}
               title={instruction.pinned ? "Unpin" : "Pin to top"}
               aria-label={instruction.pinned ? "Unpin" : "Pin to top"}
-              className="p-1.5 rounded-md text-text-muted hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+              className="p-1.5 rounded-md text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
             >
               {instruction.pinned ? (
                 <PinOff className="w-3.5 h-3.5" />

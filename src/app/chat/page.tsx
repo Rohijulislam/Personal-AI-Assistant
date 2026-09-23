@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { PageShell } from "@/components/layout/PageShell";
 import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { CopyButton } from "@/components/ui/CopyButton";
-import { ToolMeshBackground } from "@/components/tools/ToolMeshBackground";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { clsx } from "clsx";
 import {
@@ -16,7 +15,6 @@ import {
   StopCircle,
   Bot,
   User,
-  Sparkles,
   RefreshCw,
 } from "lucide-react";
 import type { GenerateResult } from "@/lib/ai";
@@ -46,10 +44,28 @@ type Message = UserMessage | AssistantMessage;
 const SYSTEM_PROMPT = `You are a helpful, friendly AI assistant. Respond conversationally and naturally. Be concise unless the user asks for detail. Format your response with markdown only when it genuinely helps readability (code blocks, lists for enumeration). For simple questions, just answer in plain prose.`;
 
 const STARTERS = [
-  { emoji: "💡", label: "Explain a concept", prompt: "Can you explain how transformer models work in plain English?" },
-  { emoji: "✍️", label: "Help me write", prompt: "Help me write a short professional bio. I'm a software engineer with 5 years of experience." },
-  { emoji: "🔍", label: "Compare two things", prompt: "What are the key differences between REST and GraphQL?" },
-  { emoji: "🐛", label: "Debug with me", prompt: "I'm getting a 'cannot read property of undefined' error in JavaScript. What are the common causes?" },
+  {
+    emoji: "💡",
+    label: "Explain a concept",
+    prompt: "Can you explain how transformer models work in plain English?",
+  },
+  {
+    emoji: "✍️",
+    label: "Help me write",
+    prompt:
+      "Help me write a short professional bio. I'm a software engineer with 5 years of experience.",
+  },
+  {
+    emoji: "🔍",
+    label: "Compare two things",
+    prompt: "What are the key differences between REST and GraphQL?",
+  },
+  {
+    emoji: "🐛",
+    label: "Debug with me",
+    prompt:
+      "I'm getting a 'cannot read property of undefined' error in JavaScript. What are the common causes?",
+  },
 ];
 
 /** Build a conversation transcript from prior messages for context injection */
@@ -57,13 +73,14 @@ function buildContextPrompt(history: Message[], currentPrompt: string): string {
   if (history.length === 0) return currentPrompt;
 
   const transcript = history
-    .filter((m): m is UserMessage | AssistantMessage =>
-      m.role === "user" || (m.role === "assistant" && !m.loading && !!m.text)
+    .filter(
+      (m): m is UserMessage | AssistantMessage =>
+        m.role === "user" || (m.role === "assistant" && !m.loading && !!m.text),
     )
     .map((m) =>
       m.role === "user"
         ? `User: ${m.text}`
-        : `Assistant: ${(m as AssistantMessage).text}`
+        : `Assistant: ${(m as AssistantMessage).text}`,
     )
     .join("\n\n");
 
@@ -80,8 +97,8 @@ function EmptyState({ onSelect }: { onSelect: (prompt: string) => void }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8 px-4 py-12 text-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-          <Sparkles className="w-7 h-7 text-white" />
+        <div className="w-14 h-14 rounded-md border border-border flex items-center justify-center">
+          <MessageSquare className="w-7 h-7 text-accent" />
         </div>
         <div>
           <h2 className="text-base font-semibold text-text-primary">
@@ -98,10 +115,10 @@ function EmptyState({ onSelect }: { onSelect: (prompt: string) => void }) {
           <button
             key={s.label}
             onClick={() => onSelect(s.prompt)}
-            className="group text-left px-4 py-3 rounded-xl border border-border bg-surface-raised hover:border-sky-500/40 hover:bg-sky-500/[0.04] transition-all duration-150"
+            className="group text-left px-4 py-3 rounded-md border border-border bg-surface-raised hover:border-accent/50 hover:bg-accent-subtle transition-all duration-150"
           >
             <span className="text-base leading-none">{s.emoji}</span>
-            <p className="mt-1.5 text-xs font-medium text-text-primary group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+            <p className="mt-1.5 text-xs font-medium text-text-primary group-hover:text-accent transition-colors">
               {s.label}
             </p>
             <p className="mt-0.5 text-xs text-text-muted line-clamp-2 leading-relaxed">
@@ -135,7 +152,7 @@ function MessageBubble({
       transition={{ duration: 0.18, ease: "easeOut" }}
       className={clsx(
         "flex gap-3 group",
-        isUser ? "flex-row-reverse" : "flex-row"
+        isUser ? "flex-row-reverse" : "flex-row",
       )}
     >
       {/* Avatar */}
@@ -143,8 +160,8 @@ function MessageBubble({
         className={clsx(
           "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center mt-0.5",
           isUser
-            ? "bg-gradient-to-br from-sky-500 to-blue-600 shadow-sm"
-            : "bg-surface-sunken border border-border"
+            ? "bg-accent"
+            : "bg-surface-sunken border border-border",
         )}
       >
         {isUser ? (
@@ -155,9 +172,14 @@ function MessageBubble({
       </div>
 
       {/* Bubble */}
-      <div className={clsx("flex flex-col gap-1.5 max-w-[78%]", isUser && "items-end")}>
+      <div
+        className={clsx(
+          "flex flex-col gap-1.5 max-w-[78%]",
+          isUser && "items-end",
+        )}
+      >
         {isUser && (
-          <div className="px-4 py-2.5 rounded-2xl rounded-tr-sm bg-gradient-to-br from-sky-500 to-blue-600 text-white text-sm leading-relaxed shadow-sm">
+          <div className="px-4 py-2.5 rounded-md rounded-tr-sm bg-accent text-white text-sm leading-relaxed">
             {(message as UserMessage).text}
           </div>
         )}
@@ -166,7 +188,7 @@ function MessageBubble({
           <>
             {/* Loading dots */}
             {asst!.loading && !asst!.streamText && (
-              <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-surface-raised border border-border">
+              <div className="px-4 py-3 rounded-md rounded-tl-sm bg-surface-raised border border-border">
                 <div className="flex gap-1 items-center">
                   {[0, 1, 2].map((i) => (
                     <motion.span
@@ -186,11 +208,11 @@ function MessageBubble({
 
             {/* Streaming / settled text */}
             {(asst!.streamText || (!asst!.loading && asst!.text)) && (
-              <div className="px-4 py-2.5 rounded-2xl rounded-tl-sm bg-surface-raised border border-border text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
+              <div className="px-4 py-2.5 rounded-md rounded-tl-sm bg-surface-raised border border-border text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
                 {liveText}
                 {asst!.loading && (
                   <motion.span
-                    className="inline-block w-0.5 h-3.5 bg-sky-500 ml-0.5 align-middle"
+                    className="inline-block w-0.5 h-3.5 bg-accent ml-0.5 align-middle"
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.6, repeat: Infinity }}
                   />
@@ -200,7 +222,7 @@ function MessageBubble({
 
             {/* Error */}
             {asst!.error && (
-              <div className="px-4 py-2.5 rounded-2xl rounded-tl-sm bg-danger-subtle border border-danger/20 text-sm text-danger">
+              <div className="px-4 py-2.5 rounded-md rounded-tl-sm bg-danger-subtle border border-danger/20 text-sm text-danger">
                 {asst!.error}
               </div>
             )}
@@ -281,11 +303,14 @@ export default function ChatPage() {
           ? {
               ...m,
               loading: false,
-              text: (m as AssistantMessage).streamText || (m as AssistantMessage).text || "Cancelled.",
+              text:
+                (m as AssistantMessage).streamText ||
+                (m as AssistantMessage).text ||
+                "Cancelled.",
               streamText: undefined,
             }
-          : m
-      )
+          : m,
+      ),
     );
   }, [cancel]);
 
@@ -345,14 +370,14 @@ export default function ChatPage() {
               prev.map((m) =>
                 m.id === assistantId
                   ? { ...m, loading: true, streamText: accumulated }
-                  : m
-              )
+                  : m,
+              ),
             );
           },
           onCancel: () => {
             // handled by stopRunning
           },
-        }
+        },
       );
 
       if (aborted) return;
@@ -367,8 +392,8 @@ export default function ChatPage() {
                   streamText: undefined,
                   error: "The AI didn't respond. Please try again.",
                 }
-              : m
-          )
+              : m,
+          ),
         );
         toast.error("No response from the AI.");
       } else {
@@ -382,15 +407,15 @@ export default function ChatPage() {
                   streamText: undefined,
                   result,
                 }
-              : m
-          )
+              : m,
+          ),
         );
       }
 
       abortRef.current = null;
       setIsRunning(false);
     },
-    [messages, isRunning, generate]
+    [messages, isRunning, generate],
   );
 
   /** Re-send the last user message to get a fresh reply */
@@ -423,14 +448,9 @@ export default function ChatPage() {
       title="Chat"
       description="General-purpose conversation with the AI"
       icon="MessageSquare"
-      color="from-sky-500 to-blue-600"
     >
       {/* Full-bleed layout inside PageShell's p-4/p-6 content area */}
       <div className="relative flex flex-col -m-4 sm:-m-6 h-[calc(100%+2rem)] sm:h-[calc(100%+3rem)] min-h-0">
-        <ToolMeshBackground
-          colors={["bg-sky-400", "bg-blue-500", "bg-cyan-400"]}
-        />
-
         {/* Message thread */}
         <div className="flex-1 overflow-y-auto">
           <AnimatePresence mode="wait" initial={false}>
@@ -456,16 +476,13 @@ export default function ChatPage() {
                 <AnimatePresence initial={false}>
                   {messages.map((msg, i) => {
                     const isLastAssistant =
-                      msg.role === "assistant" &&
-                      i === messages.length - 1;
+                      msg.role === "assistant" && i === messages.length - 1;
                     return (
                       <MessageBubble
                         key={msg.id}
                         message={msg}
                         onRegenerate={
-                          isLastAssistant && !isRunning
-                            ? regenerate
-                            : undefined
+                          isLastAssistant && !isRunning ? regenerate : undefined
                         }
                       />
                     );
@@ -478,7 +495,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input bar */}
-        <div className="shrink-0 border-t border-border/60 bg-surface/90 backdrop-blur-xl px-4 sm:px-6 py-3">
+        <div className="shrink-0 border-t border-border bg-surface-raised px-4 sm:px-6 py-3">
           {/* Clear button — only when there are messages */}
           {!isEmpty && (
             <div className="flex justify-end mb-2">
@@ -506,11 +523,11 @@ export default function ChatPage() {
                 rows={1}
                 disabled={isRunning}
                 className={clsx(
-                  "w-full resize-none rounded-xl border bg-surface-raised px-4 py-3 text-sm text-text-primary placeholder-text-muted",
-                  "focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500/60",
+                  "w-full resize-none rounded-md border bg-surface-raised px-4 py-3 text-sm text-text-primary placeholder-text-muted",
+                  "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/60",
                   "transition-colors duration-150 leading-relaxed",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
-                  "border-border"
+                  "border-border",
                 )}
                 style={{ minHeight: "44px", maxHeight: "180px" }}
                 aria-label="Message input"
@@ -521,7 +538,7 @@ export default function ChatPage() {
             {isRunning ? (
               <button
                 onClick={stopRunning}
-                className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-danger/10 text-danger hover:bg-danger/20 transition-colors duration-150"
+                className="flex-shrink-0 w-10 h-10 rounded-md flex items-center justify-center bg-danger/10 text-danger hover:bg-danger/20 transition-colors duration-150"
                 title="Stop generating"
                 aria-label="Stop generating"
               >
@@ -532,10 +549,10 @@ export default function ChatPage() {
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim()}
                 className={clsx(
-                  "flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150",
+                  "flex-shrink-0 w-10 h-10 rounded-md flex items-center justify-center transition-all duration-150",
                   input.trim()
-                    ? "bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-sm hover:shadow-md hover:opacity-90"
-                    : "bg-surface-sunken text-text-muted cursor-not-allowed"
+                    ? "bg-accent hover:bg-accent-hover text-white"
+                    : "bg-surface-sunken text-text-muted cursor-not-allowed",
                 )}
                 title="Send message"
                 aria-label="Send message"
