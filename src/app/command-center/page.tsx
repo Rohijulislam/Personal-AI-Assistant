@@ -9,6 +9,9 @@ import { CopyButton } from "@/components/ui/CopyButton";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
+import { useDailyStatusLog } from "@/lib/hooks/useDailyStatusLog";
+import { buildDailyStatusDateContext } from "@/lib/date-utils";
+import { prepareInputWithAutoFill } from "@/lib/daily-status";
 import { clsx } from "clsx";
 import {
   BrainCircuit,
@@ -100,21 +103,6 @@ const TOOL_META: Record<
 // ── System prompts for each tool (mirrors the individual pages) ──────────────
 
 function buildDailyStatusPrompt(): string {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const fmt = (d: Date) =>
-    `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
-
   return `You are a daily standup formatter. The user will give you raw bullet points or notes grouped into sections. Your job is to output a formatted daily status update.
 
 Rules:
@@ -152,7 +140,7 @@ Output structure:
 Text cleanup: fix typos, keep task IDs exactly as-is, keep parenthetical annotations exactly as-is.
 Each bullet must start with " - " (one space, dash, one space).
 
-Today is ${days[today.getDay()]} ${fmt(today)}. Yesterday was ${days[yesterday.getDay()]} ${fmt(yesterday)}.`;
+${buildDailyStatusDateContext()}`;
 }
 
 function buildPromptRewriterPrompt(model: string, style: string): string {
@@ -382,6 +370,7 @@ export default function CommandCenterPage() {
   const executor = useGenerate("command-center");
 
   const { instructions } = useSavedInstructions();
+  const { lastEntry, recordTodayItems } = useDailyStatusLog();
 
   // Build a condensed saved-instructions context string for the orchestrator
   const savedInstructionsContext = instructions
@@ -573,9 +562,24 @@ export default function CommandCenterPage() {
       const systemPrompt = buildToolSystemPrompt(toolCall);
       const temperature = getToolTemperature(toolCall.tool);
 
+      let executorInput = toolCall.input;
+      if (toolCall.tool === "daily_status") {
+        const { input: preparedInput, autoFilled } = prepareInputWithAutoFill(
+          toolCall.input,
+          lastEntry,
+          new Date(),
+        );
+        executorInput = preparedInput;
+        if (autoFilled && lastEntry) {
+          toast.info(
+            `Included your saved update from ${lastEntry.dateLabel} as yesterday's work.`,
+          );
+        }
+      }
+
       const toolResult = await executor.generate(
         {
-          prompt: toolCall.input,
+          prompt: executorInput,
           system: systemPrompt,
           temperature,
           stream: true,
@@ -613,6 +617,9 @@ export default function CommandCenterPage() {
         );
         toast.error("Tool execution failed — see message for details.");
       } else {
+        if (toolCall.tool === "daily_status") {
+          recordTodayItems(toolCall.input, new Date());
+        }
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -631,7 +638,14 @@ export default function CommandCenterPage() {
       abortRef.current = null;
       setIsRunning(false);
     },
-    [isRunning, orchestrator, executor, savedInstructionsContext],
+    [
+      isRunning,
+      orchestrator,
+      executor,
+      savedInstructionsContext,
+      lastEntry,
+      recordTodayItems,
+    ],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

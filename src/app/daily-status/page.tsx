@@ -10,6 +10,9 @@ import { ProviderBadge } from "@/components/ui/ProviderBadge";
 import { SkeletonLines } from "@/components/ui/Skeleton";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useGenerate } from "@/lib/hooks/useGenerate";
+import { useDailyStatusLog } from "@/lib/hooks/useDailyStatusLog";
+import { buildDailyStatusDateContext } from "@/lib/date-utils";
+import { prepareInputWithAutoFill } from "@/lib/daily-status";
 import { clsx } from "clsx";
 import { RefreshCw, ClipboardList as EmptyIcon } from "lucide-react";
 import type { GenerateOptions } from "@/lib/ai";
@@ -59,13 +62,6 @@ Text cleanup rules:
 - Each bullet must start with " - " (one space, dash, one space).
 - Do not add or remove bullet points — keep the same number of items the user gave you.`;
 
-function formatDateMDY(date: Date): string {
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  return `${mm}/${dd}/${yyyy}`;
-}
-
 const PLACEHOLDER = `y
 T47193 (Continue) [Chat Module] implement unit tests for phase 3
 Update the diff D4090 with unit testing changes
@@ -79,37 +75,37 @@ T47120 (Continue) [Chat Module] implement unit tests for phase 4`;
 export default function DailyStatusPage() {
   const [input, setInput] = useState("");
   const { data, loading, error, generate, reset } = useGenerate("daily-status");
+  const { lastEntry, recordTodayItems } = useDailyStatusLog();
   const lastOptions = useRef<GenerateOptions | null>(null);
 
   const runGenerate = async (options: GenerateOptions) => {
     lastOptions.current = options;
     const result = await generate(options);
     if (!result) toast.error("Failed to format status — see details below.");
+    return result;
   };
 
   const handleGenerate = async () => {
     if (!input.trim()) return;
     const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const dayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const contextualPrompt = `Today is ${dayNames[today.getDay()]} ${formatDateMDY(today)}. Yesterday was ${dayNames[yesterday.getDay()]} ${formatDateMDY(yesterday)}.
+    const { input: preparedInput, autoFilled } = prepareInputWithAutoFill(
+      input,
+      lastEntry,
+      today,
+    );
+    if (autoFilled && lastEntry) {
+      toast.info(`Included your saved update from ${lastEntry.dateLabel} as yesterday's work.`);
+    }
+    const contextualPrompt = `${buildDailyStatusDateContext(today)}
 
 Raw input:
-${input.trim()}`;
-    await runGenerate({
+${preparedInput}`;
+    const result = await runGenerate({
       prompt: contextualPrompt,
       system: SYSTEM_PROMPT,
       temperature: 0.2,
     });
+    if (result) recordTodayItems(input, today);
   };
 
   const handleRegenerate = async () => {
@@ -161,6 +157,12 @@ ${input.trim()}`;
                 </kbd>
                 .
               </p>
+              {lastEntry && (
+                <p className="text-[11px] text-text-muted/70 mt-1">
+                  Saved from {lastEntry.dayName} {lastEntry.dateLabel} — auto-filled
+                  as &quot;yesterday&quot; when you skip that section.
+                </p>
+              )}
             </div>
             {input && (
               <Button

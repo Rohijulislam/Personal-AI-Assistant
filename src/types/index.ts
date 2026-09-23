@@ -38,6 +38,16 @@ export interface SavedInstruction {
   pinned: boolean;
 }
 
+export interface DailyStatusEntry {
+  /** Local ISO date (YYYY-MM-DD) of the day these items were "planned for". */
+  date: string;
+  dayName: string;
+  dateLabel: string;
+  /** Raw bullet text from the "today"/"planned" section, reusable as next business day's "yesterday". */
+  items: string;
+  updatedAt: string;
+}
+
 export type CommandCategory =
   | "git"
   | "shell"
