@@ -24,9 +24,11 @@ interface InstructionFormModalProps {
   instruction: SavedInstruction | null;
   onSave: (draft: InstructionDraft) => void;
   onClose: () => void;
+  draftValue?: InstructionDraft;
+  onDraftChange?: (draft: InstructionDraft) => void;
 }
 
-const EMPTY_DRAFT: InstructionDraft = {
+export const EMPTY_INSTRUCTION_DRAFT: InstructionDraft = {
   title: "",
   content: "",
   category: "shell",
@@ -38,8 +40,16 @@ export function InstructionFormModal({
   instruction,
   onSave,
   onClose,
+  draftValue,
+  onDraftChange,
 }: InstructionFormModalProps) {
-  const [draft, setDraft] = useState<InstructionDraft>(EMPTY_DRAFT);
+  const [localDraft, setLocalDraft] = useState<InstructionDraft>(EMPTY_INSTRUCTION_DRAFT);
+  const draft = draftValue ?? localDraft;
+  const setDraft = (next: InstructionDraft | ((previous: InstructionDraft) => InstructionDraft)) => {
+    const updated = typeof next === "function" ? next(draft) : next;
+    if (onDraftChange) onDraftChange(updated);
+    else setLocalDraft(updated);
+  };
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
 
@@ -47,9 +57,10 @@ export function InstructionFormModal({
 
   // Populate form when editing
   useEffect(() => {
+    if (draftValue !== undefined) return;
     if (instruction) {
       /* eslint-disable react-hooks/set-state-in-effect */
-      setDraft({
+      setLocalDraft({
         title: instruction.title,
         content: instruction.content,
         category: instruction.category,
@@ -58,11 +69,11 @@ export function InstructionFormModal({
       });
       /* eslint-enable react-hooks/set-state-in-effect */
     } else {
-      setDraft(EMPTY_DRAFT);
+      setLocalDraft(EMPTY_INSTRUCTION_DRAFT);
     }
     setTagInput("");
     setErrors({});
-  }, [instruction]);
+  }, [instruction, draftValue]);
 
   function set<K extends keyof InstructionDraft>(key: K, value: InstructionDraft[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));

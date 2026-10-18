@@ -19,6 +19,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { GenerateResult } from "@/lib/ai";
+import { useUserData } from "@/lib/hooks/useUserData";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -260,8 +262,9 @@ function MessageBubble({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+  const { value: messages, setValue: setMessages } =
+    useUserData<Message[]>("chat-history", "chat-history", []);
+  const { draft: input, setDraft: setInput } = useToolDraft("chat", "");
   const [isRunning, setIsRunning] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -313,14 +316,14 @@ export default function ChatPage() {
           : m,
       ),
     );
-  }, [cancel]);
+  }, [cancel, setMessages]);
 
   const clearConversation = useCallback(() => {
     if (isRunning) stopRunning();
     setMessages([]);
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-  }, [isRunning, stopRunning]);
+  }, [isRunning, stopRunning, setMessages]);
 
   const sendMessage = useCallback(
     async (userText: string) => {
@@ -416,7 +419,7 @@ export default function ChatPage() {
       abortRef.current = null;
       setIsRunning(false);
     },
-    [messages, isRunning, generate],
+    [messages, isRunning, generate, setMessages],
   );
 
   /** Re-send the last user message to get a fresh reply */
@@ -433,7 +436,7 @@ export default function ChatPage() {
 
     setMessages(trimmedHistory);
     sendMessage(lastUser.text);
-  }, [messages, sendMessage]);
+  }, [messages, sendMessage, setMessages]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {

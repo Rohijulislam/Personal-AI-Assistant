@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
@@ -105,9 +106,11 @@ Output rules:
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function PromptRewriterPage() {
-  const [input, setInput] = useState("");
-  const [model, setModel] = useState<TargetModel>("claude");
-  const [style, setStyle] = useState<PromptStyle>("detailed");
+  const { draft, setDraft } = useToolDraft("prompt-rewriter", { input: "", model: "claude" as TargetModel, style: "detailed" as PromptStyle });
+  const { input, model, style } = draft;
+  const setInput = (input: string) => setDraft((current) => ({ ...current, input }));
+  const setModel = (model: TargetModel) => setDraft((current) => ({ ...current, model }));
+  const setStyle = (style: PromptStyle) => setDraft((current) => ({ ...current, style }));
   const { data, loading, error, generate, reset } =
     useGenerate("prompt-rewriter");
   const lastOptions = useRef<GenerateOptions | null>(null);

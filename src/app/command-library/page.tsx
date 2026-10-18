@@ -7,8 +7,9 @@ import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { CommandCard, CATEGORY_LABELS } from "@/components/tools/CommandCard";
-import { CommandFormModal } from "@/components/tools/CommandFormModal";
+import { CommandFormModal, EMPTY_COMMAND_DRAFT } from "@/components/tools/CommandFormModal";
 import { useCommandLibrary } from "@/lib/hooks/useCommandLibrary";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import type { SavedCommand, CommandCategory } from "@/types";
 import type { CommandDraft } from "@/lib/hooks/useCommandLibrary";
 
@@ -25,6 +26,12 @@ export default function CommandLibraryPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<SavedCommand | null>(null);
+  const { draft: formDrafts, setDraft: setFormDrafts } = useToolDraft<Record<string, CommandDraft>>("command-library-form", {});
+  const formKey = editing?.id ?? "new";
+  const formValue = formDrafts[formKey] ?? (editing ? {
+    title: editing.title, command: editing.command, description: editing.description,
+    category: editing.category, tags: editing.tags, favorite: editing.favorite,
+  } : EMPTY_COMMAND_DRAFT);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<CommandCategory | "all">("all");
 
@@ -44,6 +51,11 @@ export default function CommandLibraryPage() {
     } else {
       add(draft);
     }
+    setFormDrafts((previous) => {
+      const updated = { ...previous };
+      delete updated[formKey];
+      return updated;
+    });
   }
 
   function handleClose() {
@@ -184,7 +196,7 @@ export default function CommandLibraryPage() {
       </PageShell>
 
       {modalOpen && (
-        <CommandFormModal command={editing} onSave={handleSave} onClose={handleClose} />
+        <CommandFormModal command={editing} draftValue={formValue} onDraftChange={(draft) => setFormDrafts((previous) => ({ ...previous, [formKey]: draft }))} onSave={handleSave} onClose={handleClose} />
       )}
     </>
   );

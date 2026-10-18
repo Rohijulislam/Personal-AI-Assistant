@@ -21,11 +21,14 @@ import {
   X,
   BrainCircuit,
   MessageSquare,
+  UserRound,
+  LogOut,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { navItems, navGroups } from "@/lib/nav-items";
 import { useAppUI } from "@/components/layout/AppUIProvider";
+import { signOut } from "@/app/actions/auth";
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -153,7 +156,11 @@ export function MobileNavDrawer() {
                   })}
                 </nav>
 
-                <div className="px-2 py-3 border-t border-border">
+                <div className="space-y-1 border-t border-border px-2 py-3">
+                  <Link href="/account" onClick={() => setMobileNavOpen(false)} aria-current={pathname === "/account" ? "page" : undefined} className={clsx("flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-surface-sunken", pathname === "/account" ? "bg-accent-subtle text-accent" : "text-text-secondary hover:text-text-primary")}>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-subtle text-accent"><UserRound className="h-4 w-4" aria-hidden="true" /></span>
+                    <span><span className="block font-medium">Account</span><span className="block text-[10px] text-text-muted">Profile and data</span></span>
+                  </Link>
                   <button
                     onClick={() =>
                       setTheme(resolvedTheme === "dark" ? "light" : "dark")
@@ -175,6 +182,11 @@ export function MobileNavDrawer() {
                       ? "Light mode"
                       : "Dark mode"}
                   </button>
+                  <form action={signOut}>
+                    <button type="submit" className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-secondary hover:bg-danger-subtle hover:text-danger">
+                      <LogOut className="h-4 w-4 shrink-0 text-text-muted group-hover:text-danger" aria-hidden="true" /> Sign out
+                    </button>
+                  </form>
                 </div>
               </motion.div>
             </Dialog.Content>

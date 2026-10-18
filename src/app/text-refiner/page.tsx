@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
@@ -113,9 +114,11 @@ Output rules:
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function TextRefinerPage() {
-  const [input, setInput] = useState("");
-  const [audience, setAudience] = useState<Audience>("client");
-  const [tone, setTone] = useState<Tone>("professional");
+  const { draft, setDraft } = useToolDraft("text-refiner", { input: "", audience: "client" as Audience, tone: "professional" as Tone });
+  const { input, audience, tone } = draft;
+  const setInput = (input: string) => setDraft((current) => ({ ...current, input }));
+  const setAudience = (audience: Audience) => setDraft((current) => ({ ...current, audience }));
+  const setTone = (tone: Tone) => setDraft((current) => ({ ...current, tone }));
   const { data, loading, error, generate, reset } = useGenerate("text-refiner");
   const lastOptions = useRef<GenerateOptions | null>(null);
 

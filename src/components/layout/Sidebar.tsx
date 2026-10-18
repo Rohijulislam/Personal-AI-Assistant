@@ -21,11 +21,14 @@ import {
   ChevronLeft,
   BrainCircuit,
   MessageSquare,
+  UserRound,
+  LogOut,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { navItems, navGroups } from "@/lib/nav-items";
 import { useAppUI } from "@/components/layout/AppUIProvider";
+import { signOut } from "@/app/actions/auth";
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -60,7 +63,7 @@ export function Sidebar() {
   return (
     <aside
       className={clsx(
-        "hidden sm:flex relative shrink-0 h-screen flex-col bg-surface-raised border-r border-border overflow-y-auto overflow-x-hidden transition-[width] duration-200 ease-out",
+        "relative hidden h-screen shrink-0 flex-col border-r border-border bg-surface-raised transition-[width] duration-200 ease-out sm:flex",
         collapsed ? "sm:w-16" : "sm:w-16 lg:w-60",
       )}
     >
@@ -80,7 +83,7 @@ export function Sidebar() {
       </button>
 
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-border">
+      <div className="flex shrink-0 items-center gap-2.5 border-b border-border px-4 py-4">
         <div className="w-7 h-7 rounded-[5px] bg-accent flex items-center justify-center shrink-0">
           <span className="text-xs font-bold text-white leading-none">A</span>
         </div>
@@ -95,7 +98,7 @@ export function Sidebar() {
       </div>
 
       {/* Search trigger */}
-      <div className="px-2 pt-3">
+      <div className="shrink-0 px-2 pt-3">
         <button
           onClick={() => setCommandPaletteOpen(true)}
           className={clsx(
@@ -128,7 +131,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-3 space-y-4" aria-label="Main navigation">
+      <nav className="min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-2 py-3" aria-label="Main navigation">
         {navGroups.map((group, i) => {
           const items = navItems.filter((item) => group.ids.includes(item.id));
           return (
@@ -202,15 +205,6 @@ export function Sidebar() {
                       {item.label}
                     </span>
 
-                    {/* Tooltip shown only when the rail is icon-only */}
-                    <span
-                      className={clsx(
-                        "pointer-events-none absolute left-full top-1/2 z-30 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border border-border bg-surface-raised px-2 py-1 text-xs font-medium text-text-primary opacity-0 shadow-md transition-opacity duration-100 group-hover:opacity-100",
-                        collapsed ? "lg:block" : "lg:hidden",
-                      )}
-                    >
-                      {item.label}
-                    </span>
                   </Link>
                 );
               })}
@@ -220,7 +214,20 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-2 py-3 border-t border-border space-y-1">
+      <div className="shrink-0 space-y-1 border-t border-border px-2 py-3">
+        <Link
+          href="/account"
+          title="Account"
+          aria-current={pathname === "/account" ? "page" : undefined}
+          className={clsx(
+            "group flex w-full items-center gap-3 rounded-lg py-2 text-sm transition-colors duration-150 hover:bg-surface-sunken",
+            collapsed ? "justify-center px-0" : "px-3",
+            pathname === "/account" ? "bg-accent-subtle text-accent" : "text-text-secondary hover:text-text-primary",
+          )}
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-subtle text-accent"><UserRound className="h-4 w-4" aria-hidden="true" /></span>
+          <span className={clsx("hidden min-w-0", !collapsed && "lg:block")}><span className="block font-medium">Account</span><span className="block text-[10px] text-text-muted">Profile and data</span></span>
+        </Link>
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           className={clsx(
@@ -251,14 +258,12 @@ export function Sidebar() {
             {mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
           </span>
         </button>
-        <p
-          className={clsx(
-            "hidden px-3 pt-1 text-[10px] text-text-muted",
-            !collapsed && "lg:block",
-          )}
-        >
-          Powered by Google AI &amp; Groq
-        </p>
+        <form action={signOut}>
+          <button type="submit" title="Sign out" className={clsx("group flex w-full items-center gap-3 rounded-lg py-2 text-sm text-text-secondary transition-colors duration-150 hover:bg-danger-subtle hover:text-danger", collapsed ? "justify-center px-0" : "px-3")}>
+            <LogOut className="h-4 w-4 shrink-0 text-text-muted group-hover:text-danger" aria-hidden="true" />
+            <span className={clsx("hidden", !collapsed && "lg:inline")}>Sign out</span>
+          </button>
+        </form>
       </div>
     </aside>
   );

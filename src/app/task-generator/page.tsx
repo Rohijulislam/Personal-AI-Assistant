@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import { toast } from "sonner";
 import * as Switch from "@radix-ui/react-switch";
 import { motion, AnimatePresence } from "framer-motion";
@@ -148,10 +149,11 @@ function formatTaskAsText(task: ParsedTask): string {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function TaskGeneratorPage() {
-  const [input, setInput] = useState("");
-  const [taskType, setTaskType] = useState<TaskType>("feature");
-  const [includeAcceptanceCriteria, setIncludeAcceptanceCriteria] =
-    useState(false);
+  const { draft, setDraft } = useToolDraft("task-generator", { input: "", taskType: "feature" as TaskType, includeAcceptanceCriteria: false });
+  const { input, taskType, includeAcceptanceCriteria } = draft;
+  const setInput = (input: string) => setDraft((current) => ({ ...current, input }));
+  const setTaskType = (taskType: TaskType) => setDraft((current) => ({ ...current, taskType }));
+  const setIncludeAcceptanceCriteria = (includeAcceptanceCriteria: boolean) => setDraft((current) => ({ ...current, includeAcceptanceCriteria }));
   const { data, loading, error, generate, reset } =
     useGenerate("task-generator");
   const lastOptions = useRef<GenerateOptions | null>(null);

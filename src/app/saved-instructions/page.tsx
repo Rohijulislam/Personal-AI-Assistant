@@ -7,8 +7,9 @@ import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { InstructionCard } from "@/components/tools/InstructionCard";
-import { InstructionFormModal } from "@/components/tools/InstructionFormModal";
+import { InstructionFormModal, EMPTY_INSTRUCTION_DRAFT } from "@/components/tools/InstructionFormModal";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import type { SavedInstruction, InstructionCategory } from "@/types";
 import type { InstructionDraft } from "@/lib/hooks/useSavedInstructions";
 
@@ -31,6 +32,12 @@ export default function SavedInstructionsPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<SavedInstruction | null>(null);
+  const { draft: formDrafts, setDraft: setFormDrafts } = useToolDraft<Record<string, InstructionDraft>>("saved-instructions-form", {});
+  const formKey = editing?.id ?? "new";
+  const formValue = formDrafts[formKey] ?? (editing ? {
+    title: editing.title, content: editing.content, category: editing.category,
+    tags: editing.tags, pinned: editing.pinned,
+  } : EMPTY_INSTRUCTION_DRAFT);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<
     InstructionCategory | "all"
@@ -52,6 +59,11 @@ export default function SavedInstructionsPage() {
     } else {
       add(draft);
     }
+    setFormDrafts((previous) => {
+      const updated = { ...previous };
+      delete updated[formKey];
+      return updated;
+    });
   }
 
   function handleClose() {
@@ -195,6 +207,8 @@ export default function SavedInstructionsPage() {
       {modalOpen && (
         <InstructionFormModal
           instruction={editing}
+          draftValue={formValue}
+          onDraftChange={(draft) => setFormDrafts((previous) => ({ ...previous, [formKey]: draft }))}
           onSave={handleSave}
           onClose={handleClose}
         />

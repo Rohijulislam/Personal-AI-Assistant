@@ -29,15 +29,9 @@ Each tool (`daily-status`, `prompt-rewriter`, `text-refiner`, `task-generator`, 
 
 Command Center (`src/app/command-center/page.tsx`) is a second layer on top of this: an orchestrator call (its own system prompt, temperature 0.2) decides which tool to route to, then a second `generate` call runs that tool's own prompt. If a new tool should be reachable from Command Center, update its orchestrator prompt and `ToolName` union too — a working standalone tool page is not enough to make it routable.
 
-## Persistence: localStorage only, hydration-flag pattern
+## Persistence: Supabase with a scoped browser cache
 
-There is no backend database. Everything a user saves (saved instructions, command library, daily-status log, generation history, model settings) lives in the browser via hooks in `src/lib/hooks/`, all following the same shape — see `useSavedInstructions.ts` as the reference:
-
-1. `useState` starts empty (SSR-safe).
-2. One `useEffect` on mount loads from `localStorage` and sets a `hydrated` flag.
-3. A second `useEffect`, gated on `hydrated`, persists on every change.
-
-The `hydrated` gate matters: persisting before hydration completes would overwrite real saved data with the initial empty state. Reuse this shape for any new persisted hook.
+Saved content, conversations, settings, and drafts use `src/lib/hooks/useUserData.ts`. It loads the signed-in user's `public.user_data` row, imports a legacy browser value once when the cloud row is absent, and keeps a user-scoped localStorage cache. Writes begin only after hydration, so an initial empty value cannot overwrite cloud data. Use `useToolDraft.ts` for unfinished inputs and `useUserData.ts` for a new collection. Keep each collection in the allowlist in `src/lib/supabase/schema.sql`; add a migration for already deployed projects. Preserve the per-user RLS policies. The Account page's JSON export/import contract lives in `src/lib/data-transfer.ts` and `src/components/auth/DataManager.tsx`; include new collections there too.
 
 ## Testing
 

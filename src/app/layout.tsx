@@ -3,10 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { MobileNavDrawer } from "@/components/layout/MobileNavDrawer";
-import { CommandPalette } from "@/components/layout/CommandPalette";
 import { AppUIProvider } from "@/components/layout/AppUIProvider";
+import { AppShell } from "@/components/layout/AppShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,12 +50,7 @@ export default function RootLayout({
       <body className="h-full flex bg-surface text-text-primary" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AppUIProvider>
-            <Sidebar />
-            <MobileNavDrawer />
-            <main className="flex-1 min-h-screen overflow-hidden flex flex-col">
-              {children}
-            </main>
-            <CommandPalette />
+            <AppShell>{children}</AppShell>
           </AppUIProvider>
           <Toaster
             position="bottom-right"

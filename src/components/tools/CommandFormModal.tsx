@@ -20,9 +20,11 @@ interface CommandFormModalProps {
   command: SavedCommand | null;
   onSave: (draft: CommandDraft) => void;
   onClose: () => void;
+  draftValue?: CommandDraft;
+  onDraftChange?: (draft: CommandDraft) => void;
 }
 
-const EMPTY_DRAFT: CommandDraft = {
+export const EMPTY_COMMAND_DRAFT: CommandDraft = {
   title: "",
   command: "",
   description: "",
@@ -31,17 +33,24 @@ const EMPTY_DRAFT: CommandDraft = {
   favorite: false,
 };
 
-export function CommandFormModal({ command, onSave, onClose }: CommandFormModalProps) {
-  const [draft, setDraft] = useState<CommandDraft>(EMPTY_DRAFT);
+export function CommandFormModal({ command, onSave, onClose, draftValue, onDraftChange }: CommandFormModalProps) {
+  const [localDraft, setLocalDraft] = useState<CommandDraft>(EMPTY_COMMAND_DRAFT);
+  const draft = draftValue ?? localDraft;
+  const setDraft = (next: CommandDraft | ((previous: CommandDraft) => CommandDraft)) => {
+    const updated = typeof next === "function" ? next(draft) : next;
+    if (onDraftChange) onDraftChange(updated);
+    else setLocalDraft(updated);
+  };
   const [tagInput, setTagInput] = useState("");
   const [errors, setErrors] = useState<{ title?: string; command?: string }>({});
 
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (draftValue !== undefined) return;
     if (command) {
       /* eslint-disable react-hooks/set-state-in-effect */
-      setDraft({
+      setLocalDraft({
         title: command.title,
         command: command.command,
         description: command.description,
@@ -51,11 +60,11 @@ export function CommandFormModal({ command, onSave, onClose }: CommandFormModalP
       });
       /* eslint-enable react-hooks/set-state-in-effect */
     } else {
-      setDraft(EMPTY_DRAFT);
+      setLocalDraft(EMPTY_COMMAND_DRAFT);
     }
     setTagInput("");
     setErrors({});
-  }, [command]);
+  }, [command, draftValue]);
 
   function set<K extends keyof CommandDraft>(key: K, value: CommandDraft[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));

@@ -1,30 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { SavedInstruction, InstructionCategory } from "@/types";
-
-const STORAGE_KEY = "saved-instructions";
+import { useUserData } from "@/lib/hooks/useUserData";
 
 function generateId(): string {
   return `instr_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function loadFromStorage(): SavedInstruction[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as SavedInstruction[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(instructions: SavedInstruction[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(instructions));
-  } catch {
-    // storage quota exceeded or unavailable — fail silently
-  }
 }
 
 export type InstructionDraft = {
@@ -36,23 +17,8 @@ export type InstructionDraft = {
 };
 
 export function useSavedInstructions() {
-  const [instructions, setInstructions] = useState<SavedInstruction[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  // Hydrate from localStorage once on mount
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setInstructions(loadFromStorage());
-    setHydrated(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  // Persist to localStorage on every change (after hydration)
-  useEffect(() => {
-    if (hydrated) {
-      saveToStorage(instructions);
-    }
-  }, [instructions, hydrated]);
+  const { value: instructions, setValue: setInstructions, hydrated } =
+    useUserData<SavedInstruction[]>("saved-instructions", "saved-instructions", []);
 
   const add = useCallback((draft: InstructionDraft): SavedInstruction => {
     const now = new Date().toISOString();
@@ -64,7 +30,7 @@ export function useSavedInstructions() {
     };
     setInstructions((prev) => [newInstruction, ...prev]);
     return newInstruction;
-  }, []);
+  }, [setInstructions]);
 
   const update = useCallback(
     (id: string, draft: Partial<InstructionDraft>): void => {
@@ -76,12 +42,12 @@ export function useSavedInstructions() {
         )
       );
     },
-    []
+    [setInstructions]
   );
 
   const remove = useCallback((id: string): void => {
     setInstructions((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  }, [setInstructions]);
 
   const togglePin = useCallback((id: string): void => {
     setInstructions((prev) =>
@@ -91,7 +57,7 @@ export function useSavedInstructions() {
           : item
       )
     );
-  }, []);
+  }, [setInstructions]);
 
   // Pinned items first, then sorted by most recently updated
   const sorted = [...instructions].sort((a, b) => {

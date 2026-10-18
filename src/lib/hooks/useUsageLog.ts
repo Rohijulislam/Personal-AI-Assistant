@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { ToolId } from "@/types";
 import type { GenerateResult } from "@/lib/ai";
-
-const STORAGE_KEY = "usage-log";
+import { useUserData } from "@/lib/hooks/useUserData";
 const MAX_ENTRIES = 200;
 
 export interface UsageEntry {
@@ -21,41 +20,9 @@ function generateId(): string {
   return `usage_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function loadFromStorage(): UsageEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as UsageEntry[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(entries: UsageEntry[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  } catch {
-    // storage quota exceeded or unavailable — fail silently
-  }
-}
-
 export function useUsageLog() {
-  const [entries, setEntries] = useState<UsageEntry[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    // One-time hydration from localStorage after mount (SSR has no window).
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setEntries(loadFromStorage());
-    setHydrated(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  useEffect(() => {
-    if (hydrated) {
-      saveToStorage(entries);
-    }
-  }, [entries, hydrated]);
+  const { value: entries, setValue: setEntries, hydrated } =
+    useUserData<UsageEntry[]>("usage-log", "usage-log", []);
 
   const logEntry = useCallback(
     (entry: { toolId: ToolId; prompt: string; result: GenerateResult }) => {
@@ -70,16 +37,16 @@ export function useUsageLog() {
       };
       setEntries((prev) => [newEntry, ...prev].slice(0, MAX_ENTRIES));
     },
-    []
+    [setEntries]
   );
 
   const clearEntry = useCallback((id: string): void => {
     setEntries((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  }, [setEntries]);
 
   const clearAll = useCallback((): void => {
     setEntries([]);
-  }, []);
+  }, [setEntries]);
 
   return { entries, hydrated, logEntry, clearEntry, clearAll };
 }

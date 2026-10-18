@@ -134,12 +134,24 @@ Create a `.env.local` file in the project root:
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 - Get a free Gemini key from [Google AI Studio](https://aistudio.google.com/apikey)
 - Get a free Groq key from [console.groq.com](https://console.groq.com/keys)
 
-**3. Run it**
+**3. Set up Supabase accounts and cloud storage**
+
+1. Create a project at [supabase.com](https://supabase.com/) and copy its Project URL and anon/public API key into `.env.local`.
+2. Open **SQL Editor** in Supabase. For a new project, run [`src/lib/supabase/schema.sql`](src/lib/supabase/schema.sql), then [`src/lib/supabase/2026-10-18-normalize-user-data.sql`](src/lib/supabase/2026-10-18-normalize-user-data.sql). For a project already using `user_data`, first run [`src/lib/supabase/2026-10-18-expand-collections.sql`](src/lib/supabase/2026-10-18-expand-collections.sql) if it has not been applied, then run the normalization migration. The migration creates record-level tables with per-user row-level security and copies existing data without dropping `user_data`.
+3. In **Authentication → URL Configuration**, allow `http://localhost:3000/auth/callback` for local development and add your deployed callback URL after deployment. Set `NEXT_PUBLIC_SITE_URL` to the matching site origin.
+4. Configure email confirmation and password recovery in Supabase Authentication. The app sends confirmation and reset links through Supabase Auth.
+
+Auth pages are available at `/login`, `/signup`, and `/forgot-password`. Account profile updates live at `/account`; password reset links open `/account/update-password`. Commands, instructions, generations, and conversation messages are stored as individual Supabase rows. Settings and drafts use small user-scoped JSON values. A new account needs no manual seed file: empty collections load safely, and the Command Library adds its starter commands on first visit with stable IDs. Existing browser or legacy cloud data is imported once per collection; migration markers prevent removed records from reappearing. The Account page can export a versioned JSON backup and import it by adding missing records or replacing included sections. Export also includes valid legacy data that has not yet migrated because its tool page has not been opened. Backups contain saved private text, including any credentials saved as instructions, plus the profile name/email. Account passwords and server API keys are not exported. The publishable key is public; row-level security in the SQL schema ensures users can access only their own records. Never put a Supabase secret or service-role key in a `NEXT_PUBLIC_` variable.
+
+**4. Run it**
 
 ```bash
 npm run dev
@@ -154,13 +166,15 @@ This app deploys to [Vercel](https://vercel.com) in a couple of clicks — free 
 1. Push this repo to GitHub.
 2. Import it at [vercel.com/new](https://vercel.com/new).
 3. Add `GEMINI_API_KEY` and `GROQ_API_KEY` as environment variables in the project settings.
-4. Deploy — Vercel builds and hosts it automatically on every push.
+4. Add the Supabase environment values above and allow the production `/auth/callback` URL in Supabase Authentication.
+5. Deploy — Vercel builds and hosts it automatically on every push.
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/
+│   ├── login/, signup/, forgot-password/, account/ # Authentication and account pages
 │   ├── chat/             # Normal Chat — general-purpose multi-turn AI conversation
 │   ├── command-center/   # Command Center — orchestrator that routes to specialist tools
 │   ├── daily-status/
@@ -178,13 +192,14 @@ src/
 │   └── ui/               # Buttons, badges, textarea, skeletons — shared primitives
 ├── lib/
 │   ├── ai/               # Provider clients (Gemini, Groq), model config, generation logic
-│   └── hooks/            # Local-storage-backed hooks for history, library, settings
+│   ├── hooks/            # Cloud-backed hooks with browser cache and one-time import
+│   └── supabase/         # Auth clients, session refresh, and database schema
 └── types/                # Shared TypeScript types
 ```
 
 ## 🔒 Privacy
 
-Everything you save (commands, instructions, history) stays in your browser's local storage — nothing is sent anywhere except the AI provider you choose, and only the text you submit for generation. Your API keys live in environment variables and are never exposed to the browser.
+Saved app data is stored in your Supabase project and protected by per-user row-level security. A browser localStorage copy supports fast startup and imports existing data once; Supabase is the shared source across devices. Prompts and generated output are also sent to the selected AI provider to fulfill requests. Gemini and Groq API keys stay on the server in environment variables.
 
 ---
 

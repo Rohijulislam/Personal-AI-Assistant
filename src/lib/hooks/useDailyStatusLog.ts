@@ -1,47 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { DailyStatusEntry } from "@/types";
 import { formatDateMDY, getDayName, toISODateLocal } from "@/lib/date-utils";
 import { extractTodayItems } from "@/lib/daily-status";
-
-const STORAGE_KEY = "daily-status-log";
-
-function loadFromStorage(): DailyStatusEntry | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as DailyStatusEntry) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveToStorage(entry: DailyStatusEntry | null): void {
-  try {
-    if (entry) localStorage.setItem(STORAGE_KEY, JSON.stringify(entry));
-    else localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // storage quota exceeded or unavailable — fail silently
-  }
-}
+import { useUserData } from "@/lib/hooks/useUserData";
 
 export function useDailyStatusLog() {
-  const [lastEntry, setLastEntry] = useState<DailyStatusEntry | null>(null);
-  const [hydrated, setHydrated] = useState(false);
-
-  // Hydrate from localStorage once on mount
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setLastEntry(loadFromStorage());
-    setHydrated(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  // Persist to localStorage on every change (after hydration)
-  useEffect(() => {
-    if (hydrated) saveToStorage(lastEntry);
-  }, [lastEntry, hydrated]);
+  const { value: lastEntry, setValue: setLastEntry, hydrated } =
+    useUserData<DailyStatusEntry | null>("daily-status-log", "daily-status-log", null);
 
   /** Extracts the "today"/"planned" items from raw notes and saves them as the next business day's default "yesterday". */
   const recordTodayItems = useCallback(
@@ -56,7 +23,7 @@ export function useDailyStatusLog() {
         updatedAt: new Date().toISOString(),
       });
     },
-    [],
+    [setLastEntry],
   );
 
   return { lastEntry, hydrated, recordTodayItems };

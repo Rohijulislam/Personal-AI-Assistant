@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageShell } from "@/components/layout/PageShell";
@@ -73,7 +74,7 @@ t
 T47120 (Continue) [Chat Module] implement unit tests for phase 4`;
 
 export default function DailyStatusPage() {
-  const [input, setInput] = useState("");
+  const { draft: input, setDraft: setInput } = useToolDraft("daily-status", "");
   const { data, loading, error, generate, reset } = useGenerate("daily-status");
   const { lastEntry, recordTodayItems } = useDailyStatusLog();
   const lastOptions = useRef<GenerateOptions | null>(null);

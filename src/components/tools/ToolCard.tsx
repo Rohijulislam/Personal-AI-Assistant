@@ -11,6 +11,7 @@ import {
   Settings,
   BrainCircuit,
   MessageSquare,
+  ArrowUpRight,
   LucideIcon,
 } from "lucide-react";
 import type { NavItem } from "@/types";
@@ -39,20 +40,21 @@ export function ToolCard({ item }: ToolCardProps) {
   return (
     <Link
       href={item.href}
-      className="group flex items-center gap-3 rounded-md border border-border bg-surface-raised px-3.5 py-3 hover:border-accent/50 transition-colors duration-150"
+      className="group flex min-h-24 items-start gap-3 rounded-xl border border-border bg-surface-raised p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
-      <div className="flex-shrink-0 w-8 h-8 rounded-[5px] border border-border flex items-center justify-center group-hover:border-accent/50 transition-colors duration-150">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-subtle text-accent">
         <Icon
-          className="w-3.5 h-3.5 text-text-secondary group-hover:text-accent transition-colors"
+          className="h-4 w-4"
           aria-hidden="true"
         />
       </div>
-      <div className="min-w-0">
-        <h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-semibold text-text-primary transition-colors group-hover:text-accent">
           {item.label}
         </h3>
-        <p className="text-xs text-text-muted truncate">{item.description}</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">{item.description}</p>
       </div>
+      <ArrowUpRight className="h-4 w-4 shrink-0 text-text-muted transition-colors group-hover:text-accent" aria-hidden="true" />
     </Link>
   );
 }

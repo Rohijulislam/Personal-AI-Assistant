@@ -10,7 +10,7 @@ export function Card({ children, className, as: Tag = "div" }: CardProps) {
   return (
     <Tag
       className={clsx(
-        "rounded-md border border-border bg-surface-raised",
+        "rounded-xl border border-border bg-surface-raised",
         className,
       )}
     >
@@ -53,7 +53,7 @@ export function CardFooter({
   return (
     <div
       className={clsx(
-        "px-5 py-3 border-t border-border-subtle bg-surface-sunken/50 rounded-b-md",
+        "rounded-b-xl border-t border-border-subtle bg-surface-sunken/50 px-5 py-3",
         className,
       )}
     >

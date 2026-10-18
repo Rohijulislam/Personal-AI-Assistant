@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import type { SavedCommand, CommandCategory } from "@/types";
-
-const STORAGE_KEY = "command-library";
+import { useUserData } from "@/lib/hooks/useUserData";
 
 function generateId(): string {
   return `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -247,9 +246,10 @@ const STARTER_COMMANDS: Array<Omit<CommandDraft, "favorite"> & { favorite?: bool
 ];
 
 function withMetadata(draft: Omit<CommandDraft, "favorite"> & { favorite?: boolean }, index: number): SavedCommand {
-  const now = new Date(Date.now() - (STARTER_COMMANDS.length - index) * 1000).toISOString();
+  // Stable IDs let two fresh sessions seed the same account without creating duplicates.
+  const now = new Date(Date.UTC(2026, 0, 1, 0, 0, index)).toISOString();
   return {
-    id: generateId(),
+    id: `starter-command-${index + 1}`,
     title: draft.title,
     command: draft.command,
     description: draft.description,
@@ -261,44 +261,11 @@ function withMetadata(draft: Omit<CommandDraft, "favorite"> & { favorite?: boole
   };
 }
 
-function loadFromStorage(): SavedCommand[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === null) {
-      // First-ever load: seed with a curated starter pack instead of an empty library.
-      return STARTER_COMMANDS.map(withMetadata);
-    }
-    return JSON.parse(raw) as SavedCommand[];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(commands: SavedCommand[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(commands));
-  } catch {
-    // storage quota exceeded or unavailable — fail silently
-  }
-}
+const INITIAL_COMMANDS = STARTER_COMMANDS.map(withMetadata);
 
 export function useCommandLibrary() {
-  const [commands, setCommands] = useState<SavedCommand[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setCommands(loadFromStorage());
-    setHydrated(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  useEffect(() => {
-    if (hydrated) {
-      saveToStorage(commands);
-    }
-  }, [commands, hydrated]);
+  const { value: commands, setValue: setCommands, hydrated } =
+    useUserData<SavedCommand[]>("command-library", "command-library", INITIAL_COMMANDS);
 
   const add = useCallback((draft: CommandDraft): SavedCommand => {
     const now = new Date().toISOString();
@@ -310,7 +277,7 @@ export function useCommandLibrary() {
     };
     setCommands((prev) => [newCommand, ...prev]);
     return newCommand;
-  }, []);
+  }, [setCommands]);
 
   const update = useCallback((id: string, draft: Partial<CommandDraft>): void => {
     setCommands((prev) =>
@@ -318,11 +285,11 @@ export function useCommandLibrary() {
         item.id === id ? { ...item, ...draft, updatedAt: new Date().toISOString() } : item
       )
     );
-  }, []);
+  }, [setCommands]);
 
   const remove = useCallback((id: string): void => {
     setCommands((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  }, [setCommands]);
 
   const toggleFavorite = useCallback((id: string): void => {
     setCommands((prev) =>
@@ -332,7 +299,7 @@ export function useCommandLibrary() {
           : item
       )
     );
-  }, []);
+  }, [setCommands]);
 
   // Favorites first, then most recently updated
   const sorted = [...commands].sort((a, b) => {

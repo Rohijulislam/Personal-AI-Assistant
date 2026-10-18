@@ -10,6 +10,8 @@ import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { useGenerate } from "@/lib/hooks/useGenerate";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
 import { useDailyStatusLog } from "@/lib/hooks/useDailyStatusLog";
+import { useToolDraft } from "@/lib/hooks/useToolDraft";
+import { useUserData } from "@/lib/hooks/useUserData";
 import { buildDailyStatusDateContext } from "@/lib/date-utils";
 import { prepareInputWithAutoFill } from "@/lib/daily-status";
 import { clsx } from "clsx";
@@ -357,8 +359,8 @@ const SUGGESTIONS = [
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function CommandCenterPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+  const { value: messages, setValue: setMessages } = useUserData<Message[]>("command-center-history", "command-center-history", []);
+  const { draft: input, setDraft: setInput } = useToolDraft("command-center", "");
   const [isRunning, setIsRunning] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
