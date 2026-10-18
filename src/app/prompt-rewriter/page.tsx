@@ -147,11 +147,11 @@ export default function PromptRewriterPage() {
       description="Improve rough prompts for clearer and better AI output"
       icon="Wand2"
     >
-      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <div className="max-w-5xl mx-auto flex flex-col gap-4">
+      <div className="relative h-full min-h-0 min-w-0 overflow-y-auto">
+        <div className="mx-auto flex min-w-0 max-w-5xl flex-col gap-4">
           {/* Toolbar */}
-          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-            <div className="flex items-center gap-2">
+          <div className="grid grid-cols-1 gap-4 rounded-md border border-border bg-surface-raised px-4 py-3 sm:flex sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-3">
+            <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 For
               </span>
@@ -159,10 +159,11 @@ export default function PromptRewriterPage() {
                 options={MODEL_OPTIONS}
                 value={model}
                 onChange={setModel}
+                mobileColumns={3}
                 layoutId="pr-model-segment"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 Style
               </span>
@@ -170,6 +171,7 @@ export default function PromptRewriterPage() {
                 options={STYLE_OPTIONS}
                 value={style}
                 onChange={setStyle}
+                mobileColumns={2}
                 layoutId="pr-style-segment"
               />
             </div>

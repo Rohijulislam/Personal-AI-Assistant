@@ -157,7 +157,7 @@ export function DataManager() {
   }
 
   return <div className="space-y-6">
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5">
         <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-subtle text-accent"><Download className="h-5 w-5" /></span>
         <h3 className="mt-4 text-sm font-semibold text-text-primary">Export a backup</h3>
@@ -178,7 +178,7 @@ export function DataManager() {
     </div>
     {backup && <div className="rounded-xl border border-border bg-surface-sunken p-4 sm:p-5">
       <div className="flex items-start gap-3"><FileJson2 className="mt-0.5 h-5 w-5 text-accent" /><div className="min-w-0"><p className="truncate text-sm font-semibold text-text-primary">{fileName}</p><p className="text-xs text-text-muted">{Object.keys(backup.collections).length} sections · Exported {backup.exportedAt ? new Date(backup.exportedAt).toLocaleString() : "on an unknown date"}</p></div></div>
-      <ul className="mt-4 grid gap-x-6 gap-y-2 border-t border-border pt-4 sm:grid-cols-2">
+      <ul className="mt-4 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-border pt-4 sm:grid-cols-2">
         {DATA_COLLECTIONS.filter((collection) => Object.hasOwn(backup.collections, collection)).map((collection) => <li key={collection} className="flex justify-between gap-3 text-xs"><span className="text-text-secondary">{COLLECTION_LABELS[collection]}</span><span className="text-text-muted">{collectionCount(collection, backup.collections[collection])}</span></li>)}
       </ul>
       <fieldset className="mt-5 space-y-2"><legend className="text-sm font-semibold text-text-primary">How should imported data be added?</legend>

@@ -53,7 +53,7 @@ export function PageShell({
   }, [title]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex min-h-0 min-w-0 flex-col h-full">
       {/* Page header */}
       <div className="border-b border-border bg-surface-raised px-4 py-5 sm:px-8 sm:py-6">
         <div className="flex items-center gap-4">
@@ -77,7 +77,7 @@ export function PageShell({
       </div>
 
       {/* Page content */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8">{children}</div>
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4 sm:p-8">{children}</div>
     </div>
   );
 }

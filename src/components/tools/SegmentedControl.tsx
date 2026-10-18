@@ -8,6 +8,7 @@ interface SegmentedControlProps<T extends string> {
   options: { id: T; label: string; icon: LucideIcon }[];
   value: T;
   onChange: (id: T) => void;
+  mobileColumns: 2 | 3;
   /** Unique per control instance — framer-motion groups the sliding highlight by this id */
   layoutId: string;
 }
@@ -16,10 +17,18 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  mobileColumns,
   layoutId,
 }: SegmentedControlProps<T>) {
+  const columnsClass = mobileColumns === 3 ? "grid-cols-3" : "grid-cols-2";
+
   return (
-    <div className="flex items-center gap-0.5 rounded-md border border-border bg-surface-sunken p-0.5 overflow-x-auto">
+    <div
+      className={clsx(
+        "grid w-full gap-0.5 rounded-md border border-border bg-surface-sunken p-0.5 sm:flex sm:w-fit",
+        columnsClass,
+      )}
+    >
       {options.map((opt) => {
         const Icon = opt.icon;
         const active = value === opt.id;
@@ -28,7 +37,7 @@ export function SegmentedControl<T extends string>({
             key={opt.id}
             onClick={() => onChange(opt.id)}
             className={clsx(
-              "relative flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer",
+              "relative flex min-w-0 items-center justify-center gap-1.5 rounded-[3px] px-2 py-2 text-center text-xs font-medium leading-tight transition-colors duration-150 cursor-pointer sm:whitespace-nowrap sm:px-3 sm:py-1.5",
               active
                 ? "text-white"
                 : "text-text-secondary hover:text-text-primary",

@@ -136,7 +136,7 @@ export default function SavedInstructionsPage() {
           <div className="flex-1 overflow-y-auto">
             {!hydrated ? (
               /* Loading skeleton */
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[1, 2, 3].map((n) => (
                   <Skeleton key={n} className="h-36" />
                 ))}
@@ -178,7 +178,7 @@ export default function SavedInstructionsPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 pb-4">
+              <div className="grid grid-cols-1 gap-3 pb-4 sm:grid-cols-2">
                 <AnimatePresence initial={false}>
                   {filtered.map((instr) => (
                     <motion.div

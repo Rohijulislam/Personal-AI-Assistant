@@ -25,8 +25,8 @@ export function AuthForm({ mode, next = "/dashboard", callbackError = false }: {
   const [state, action, pending] = useActionState<AuthActionState, FormData>(actionByMode[mode], {});
   const content = copy[mode];
   return (
-    <main className="min-h-screen bg-surface p-4 sm:p-7 lg:flex lg:items-center lg:justify-center">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-[0_20px_80px_-40px_var(--text-primary)] sm:min-h-[calc(100vh-3.5rem)] lg:min-h-[680px] lg:grid-cols-2">
+    <main className="min-h-dvh bg-surface p-4 sm:p-7 lg:flex lg:items-center lg:justify-center">
+      <div className="mx-auto grid grid-cols-1 min-h-[calc(100dvh-2rem)] w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-[0_20px_80px_-40px_var(--text-primary)] sm:min-h-[calc(100dvh-3.5rem)] lg:min-h-[680px] lg:grid-cols-2">
         <aside className="relative hidden overflow-hidden bg-surface-sunken p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div className="pointer-events-none absolute -right-24 -top-32 h-96 w-96 rounded-full border border-accent/15" aria-hidden="true" />
           <div className="pointer-events-none absolute -right-9 -top-16 h-72 w-72 rounded-full border border-accent/15" aria-hidden="true" />

@@ -196,11 +196,11 @@ export default function TaskGeneratorPage() {
       description="Turn a task title or rough idea into a structured developer task"
       icon="ListTodo"
     >
-      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <div className="max-w-3xl mx-auto flex flex-col gap-4">
+      <div className="relative h-full min-h-0 min-w-0 overflow-y-auto">
+        <div className="mx-auto flex min-w-0 max-w-3xl flex-col gap-4">
           {/* Toolbar */}
-          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-stretch gap-4 rounded-md border border-border bg-surface-raised px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-6 sm:gap-y-3">
+            <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 Type
               </span>
@@ -208,10 +208,11 @@ export default function TaskGeneratorPage() {
                 options={TASK_TYPE_OPTIONS}
                 value={taskType}
                 onChange={setTaskType}
+                mobileColumns={2}
                 layoutId="tg-type-segment"
               />
             </div>
-            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <label className="flex cursor-pointer select-none items-center justify-between gap-2.5 sm:justify-start">
               <span className="text-xs font-medium text-text-secondary">
                 Acceptance criteria
               </span>

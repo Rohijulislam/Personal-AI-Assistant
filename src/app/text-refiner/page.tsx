@@ -154,11 +154,11 @@ export default function TextRefinerPage() {
       description="Refine messages for clients, managers, and coworkers with selectable tones"
       icon="PenLine"
     >
-      <div className="relative h-full overflow-y-auto -m-6 p-6 min-h-0">
-        <div className="max-w-4xl mx-auto flex flex-col gap-4">
+      <div className="relative h-full min-h-0 min-w-0 overflow-y-auto">
+        <div className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4">
           {/* Toolbar */}
-          <div className="rounded-md border border-border bg-surface-raised flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-            <div className="flex items-center gap-2">
+          <div className="grid grid-cols-1 gap-4 rounded-md border border-border bg-surface-raised px-4 py-3 sm:flex sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-3">
+            <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 To
               </span>
@@ -166,10 +166,11 @@ export default function TextRefinerPage() {
                 options={AUDIENCE_OPTIONS}
                 value={audience}
                 onChange={setAudience}
+                mobileColumns={3}
                 layoutId="tr-audience-segment"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted">
                 Tone
               </span>
@@ -177,6 +178,7 @@ export default function TextRefinerPage() {
                 options={TONE_OPTIONS}
                 value={tone}
                 onChange={setTone}
+                mobileColumns={2}
                 layoutId="tr-tone-segment"
               />
             </div>

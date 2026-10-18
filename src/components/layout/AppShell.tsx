@@ -9,11 +9,11 @@ const AUTH_PAGES = ["/login", "/signup", "/forgot-password", "/account/update-pa
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (AUTH_PAGES.includes(pathname)) return <main className="min-h-screen flex-1">{children}</main>;
+  if (AUTH_PAGES.includes(pathname)) return <main className="min-h-dvh min-w-0 flex-1">{children}</main>;
   return <>
     <Sidebar />
     <MobileNavDrawer />
-    <main className="flex-1 min-h-screen overflow-hidden flex flex-col">{children}</main>
+    <main className="min-h-0 min-w-0 h-dvh flex-1 overflow-hidden flex flex-col">{children}</main>
     <CommandPalette />
   </>;
 }

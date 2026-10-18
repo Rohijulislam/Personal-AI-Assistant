@@ -128,7 +128,7 @@ export default function CommandLibraryPage() {
           <div className="flex-1 overflow-y-auto">
             {!hydrated ? (
               /* Loading skeleton */
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <Skeleton key={n} className="h-40" />
                 ))}
@@ -169,7 +169,7 @@ export default function CommandLibraryPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 pb-4">
+              <div className="grid grid-cols-1 gap-3 pb-4 sm:grid-cols-2 lg:grid-cols-3">
                 <AnimatePresence initial={false}>
                   {filtered.map((cmd) => (
                     <motion.div

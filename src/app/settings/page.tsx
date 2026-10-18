@@ -114,13 +114,13 @@ export default function SettingsPage() {
       icon="Settings"
     >
       {!hydrated ? (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Skeleton className="h-80" />
           <Skeleton className="h-80" />
         </div>
       ) : (
         <div className="flex flex-col gap-5 max-w-3xl">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <ModelPicker
               title="Default model"
               description="Used first for every request"

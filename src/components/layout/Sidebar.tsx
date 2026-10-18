@@ -63,7 +63,7 @@ export function Sidebar() {
   return (
     <aside
       className={clsx(
-        "relative hidden h-screen shrink-0 flex-col border-r border-border bg-surface-raised transition-[width] duration-200 ease-out sm:flex",
+        "relative hidden h-dvh shrink-0 flex-col border-r border-border bg-surface-raised transition-[width] duration-200 ease-out sm:flex",
         collapsed ? "sm:w-16" : "sm:w-16 lg:w-60",
       )}
     >

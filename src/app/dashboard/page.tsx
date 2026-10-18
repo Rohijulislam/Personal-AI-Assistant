@@ -44,13 +44,13 @@ export default function DashboardPage() {
   const aiTools = navItems.filter((item) => ["daily-status", "prompt-rewriter", "text-refiner", "task-generator"].includes(item.id));
   const libraryTools = navItems.filter((item) => ["command-library", "saved-instructions", "history"].includes(item.id));
 
-  return <div className="flex h-full flex-col">
+  return <div className="flex h-full min-h-0 min-w-0 flex-col">
     <header className="flex items-center gap-3 border-b border-border bg-surface-raised px-4 py-4 sm:px-8">
       <button onClick={() => setMobileNavOpen(true)} className="-ml-1 rounded-lg p-1.5 text-text-muted hover:bg-surface-sunken sm:hidden" aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
       <div className="min-w-0 flex-1"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">Workspace</p><h1 className="text-sm font-semibold text-text-primary">Dashboard</h1></div>
       <span className="hidden text-xs text-text-muted sm:block">{mounted ? now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }) : "Your workspace"}</span>
     </header>
-    <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-8">
+    <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-10">
         <section className="relative overflow-hidden rounded-2xl border border-border bg-surface-raised p-6 sm:p-8 lg:p-10">
           <div className="pointer-events-none absolute -right-20 -top-28 h-80 w-80 rounded-full border border-accent/10" aria-hidden="true" />
@@ -74,17 +74,17 @@ export default function DashboardPage() {
           </>}
         </section>
 
-        <div className="grid items-start gap-7 xl:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="grid grid-cols-1 items-start gap-7 xl:grid-cols-[minmax(0,1fr)_19rem]">
           <div className="min-w-0 space-y-8">
             <section>
               <SectionHeading eyebrow="Get started" title="Choose how to work" description="Start with a flexible assistant or jump into a focused task." />
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <FeaturedLink href="/command-center" icon={BrainCircuit} title="Command Center" description="Describe a goal and let the assistant find the right workflow." />
                 <FeaturedLink href="/chat" icon={MessageSquare} title="Chat" description="Think through ideas, ask questions, and keep the conversation going." variant="info" />
               </div>
             </section>
-            <section><SectionHeading eyebrow="Focus" title="AI tools" description="Purpose-built helpers for the work you do every day." /><div className="mt-4 grid gap-3 sm:grid-cols-2">{aiTools.map((item) => <ToolCard key={item.id} item={item} />)}</div></section>
-            <section><SectionHeading eyebrow="Keep it organized" title="Your library" description="Find, reuse, and review your saved work." /><div className="mt-4 grid gap-3 sm:grid-cols-2">{libraryTools.map((item) => <ToolCard key={item.id} item={item} />)}</div></section>
+            <section><SectionHeading eyebrow="Focus" title="AI tools" description="Purpose-built helpers for the work you do every day." /><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">{aiTools.map((item) => <ToolCard key={item.id} item={item} />)}</div></section>
+            <section><SectionHeading eyebrow="Keep it organized" title="Your library" description="Find, reuse, and review your saved work." /><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">{libraryTools.map((item) => <ToolCard key={item.id} item={item} />)}</div></section>
           </div>
           <aside className="space-y-4" aria-label="Activity">
             <section className="overflow-hidden rounded-xl border border-border bg-surface-raised">
