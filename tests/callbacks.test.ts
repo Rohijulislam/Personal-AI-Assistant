@@ -283,6 +283,8 @@ test("the retired model ids are gone from the registry", () => {
     "gemini-2.0-flash",
     "gemini-2.5-pro",
     "gemini-2.5-flash-lite",
+    "gemini-3.5-flash",
+    "gemini-3.7-flash",
     "moonshotai/kimi-k2-instruct",
     "llama-3.3-70b-versatile",
     "llama-3.1-8b-instant",

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --import ./tests/ts-resolver.mjs --test tests/callbacks.test.ts tests/orchestrator.test.ts tests/data-transfer.test.ts",
+    "test": "node --import ./tests/ts-resolver.mjs --test tests/callbacks.test.ts tests/orchestrator.test.ts tests/data-transfer.test.ts tests/personal-tasks.test.ts",
     "test:live": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs --test tests/models.live.test.ts",
     "audit:models": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/audit-models.ts",
     "probe:models": "node --import ./tests/load-env.mjs --import ./tests/ts-resolver.mjs scripts/probe-all.ts",

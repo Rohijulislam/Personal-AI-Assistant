@@ -20,6 +20,7 @@ const STORAGE_KEYS: Record<DataCollection, string> = {
   "usage-log": "usage-log",
   "chat-history": "chat-history",
   "command-center-history": "command-center-history",
+  "personal-tasks": "personal-tasks",
   drafts: "assistant:drafts",
 };
 

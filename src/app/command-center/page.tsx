@@ -139,7 +139,11 @@ Output structure:
 - If only past-date sections are given → output only the "Worked on" block(s).
 - If both are given → output all "Worked on" blocks first, then "Impediment: none", then "Planned for".
 
-Text cleanup: fix typos, keep task IDs exactly as-is, keep parenthetical annotations exactly as-is.
+Text cleanup:
+- Correct every spelling mistake, including common typos and word confusions.
+- Fix capitalisation, punctuation, and grammar without changing the intended meaning.
+- Keep task IDs exactly as-is and keep parenthetical annotations, class names, and file names exactly as-is.
+- Do not treat technical identifiers, class names, file names, or code symbols as misspellings.
 Each bullet must start with " - " (one space, dash, one space).
 
 ${buildDailyStatusDateContext()}`;

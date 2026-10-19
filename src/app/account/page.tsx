@@ -22,15 +22,15 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const name = String(user.user_metadata?.display_name ?? "");
   const initials = name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || user.email?.[0]?.toUpperCase() || "A";
   return <PageShell title="Account" description="Profile, security, and your data" icon="Settings">
-    <div className="mx-auto max-w-4xl space-y-6 pb-10">
+    <div className="mx-auto min-w-0 max-w-4xl space-y-6 pb-10">
       {params["password-updated"] && <p role="status" className="rounded-lg bg-accent-subtle px-4 py-3 text-sm text-accent">Your password has been updated.</p>}
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface-raised p-6 sm:p-8">
         <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border border-accent/10" aria-hidden="true" />
         <div className="pointer-events-none absolute -right-5 -top-12 h-44 w-44 rounded-full border border-accent/10" aria-hidden="true" />
-        <div className="relative flex flex-wrap items-center gap-5">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-accent-subtle text-xl font-bold tracking-tight text-accent">{initials}</div>
-          <div className="min-w-0 flex-1"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Your workspace</p><h2 className="mt-1 truncate text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">{name || "My account"}</h2><p className="mt-1 truncate text-sm text-text-muted">{user.email}</p></div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success-subtle px-3 py-1.5 text-xs font-semibold text-success"><ShieldCheck className="h-3.5 w-3.5" /> Protected account</span>
+        <div className="relative grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-4 gap-y-4 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-x-6 lg:grid-cols-[5rem_minmax(0,1fr)_auto]">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-accent-subtle text-xl font-bold tracking-tight text-accent sm:h-20 sm:w-20 sm:text-2xl">{initials}</div>
+          <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Your workspace</p><h2 className="mt-1 break-words text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">{name || "My account"}</h2><p className="mt-1 text-sm text-text-muted [overflow-wrap:anywhere]">{user.email}</p></div>
+          <span className="col-span-2 inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-success/20 bg-success-subtle px-3 py-1.5 text-xs font-semibold text-success lg:col-span-1 lg:justify-self-end"><ShieldCheck className="h-3.5 w-3.5 shrink-0" /> Protected account</span>
         </div>
       </div>
       <section className="rounded-2xl border border-border bg-surface-raised p-5 sm:p-7">

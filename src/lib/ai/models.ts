@@ -25,10 +25,13 @@ import type { AIProvider, ModelSettings } from "./types";
  *
  * Deliberately excluded, with measurements:
  *
- *   gemini-3.8/3.7/3.6-flash   intermittent 503 "high demand"; 3.7 and 3.6
- *                              passed only 2/3 rounds and ran 4–16s. Too
- *                              slow and too flaky for interactive tools.
- *   gemini-3.5-flash           reliable (3/3) but 12–16s per call.
+ *   gemini-3.8/3.6-flash       intermittent 503 "high demand"; 3.6 passed
+ *                              only 2/3 rounds and both ran 4–16s. Too slow
+ *                              and too flaky for interactive tools.
+ *   gemini-3.5-flash           deprecated; requests now route to 3.6 Flash,
+ *                              so it is no longer an independent model.
+ *   gemini-3.7-flash           deprecated; requests now route to 3.8 Flash,
+ *                              so it is no longer an independent model.
  *   gemini-pro-latest,         429 quota exceeded — this key has no Pro-tier
  *   gemini-3.1-pro-preview     allowance, so no Gemini Pro model is usable.
  *   groq/compound,             deprecated 2026-08-24, DECOMMISSIONED

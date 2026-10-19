@@ -6,6 +6,7 @@ export const DATA_COLLECTIONS = [
   "usage-log",
   "chat-history",
   "command-center-history",
+  "personal-tasks",
   "drafts",
 ] as const;
 
@@ -21,6 +22,7 @@ export type AssistantBackup = {
 
 const LIST_COLLECTIONS: DataCollection[] = [
   "saved-instructions", "command-library", "usage-log", "chat-history", "command-center-history",
+  "personal-tasks",
 ];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -29,6 +31,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function validTimestamp(value: unknown): boolean {
   return typeof value === "string" && value.length > 0 && !Number.isNaN(Date.parse(value));
+}
+
+function validLocalDate(value: unknown): boolean {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
 }
 
 export function validPayload(collection: DataCollection, value: unknown): boolean {
@@ -45,6 +54,13 @@ export function validPayload(collection: DataCollection, value: unknown): boolea
       if (collection === "usage-log") return typeof item.toolId === "string" && typeof item.provider === "string"
         && typeof item.model === "string" && typeof item.prompt === "string" && typeof item.text === "string"
         && validTimestamp(item.createdAt);
+      if (collection === "personal-tasks") return typeof item.title === "string" && item.title.trim().length > 0
+        && typeof item.description === "string" && ["high", "medium", "low"].includes(String(item.priority))
+        && (item.dueDate === null || validLocalDate(item.dueDate))
+        && (item.dueTime === null || (typeof item.dueTime === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(item.dueTime)))
+        && (item.dueDate !== null || item.dueTime === null)
+        && validTimestamp(item.createdAt) && validTimestamp(item.updatedAt)
+        && (item.completedAt === null || validTimestamp(item.completedAt));
       return (item.role === "user" || item.role === "assistant") && typeof item.text === "string";
     });
   }
@@ -108,5 +124,6 @@ export const COLLECTION_LABELS: Record<DataCollection, string> = {
   "usage-log": "Generation history",
   "chat-history": "Chat conversations",
   "command-center-history": "Command Center conversations",
+  "personal-tasks": "Personal tasks",
   drafts: "Unfinished drafts",
 };

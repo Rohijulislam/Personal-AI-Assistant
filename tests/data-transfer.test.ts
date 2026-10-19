@@ -69,6 +69,7 @@ const contents = {
   "usage-log": [{ id: "usage-1", toolId: "chat", provider: "gemini", model: "gemini-2.5-flash", prompt: "Hi", text: "Hello", createdAt: stamp }],
   "chat-history": [{ id: "chat-1", role: "user", text: "Hi" }],
   "command-center-history": [{ id: "center-1", role: "assistant", text: "Done" }],
+  "personal-tasks": [{ id: "task-1", title: "Pay bill", description: "", priority: "high", dueDate: "2026-01-02", dueTime: null, createdAt: stamp, updatedAt: stamp, completedAt: null }],
   drafts: { chat: { input: "unfinished" } },
 } as const;
 
@@ -129,4 +130,11 @@ test("rejects backup records missing fields required by normalized tables", () =
   assert.throws(() => parseAssistantBackup(JSON.stringify({
     format: "my-assistant-backup", version: 1, collections: { "usage-log": [{ id: "bad", prompt: "Hi", text: "Hello" }] },
   })), /Invalid data in usage-log/);
+});
+
+test("rejects invalid personal task deadlines in a backup", () => {
+  const invalid = { ...contents["personal-tasks"][0], dueDate: "2026-02-31" };
+  assert.throws(() => parseAssistantBackup(JSON.stringify({
+    format: "my-assistant-backup", version: 1, collections: { "personal-tasks": [invalid] },
+  })), /Invalid data in personal-tasks/);
 });

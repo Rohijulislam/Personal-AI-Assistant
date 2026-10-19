@@ -1,208 +1,247 @@
 <div align="center">
 
-<img src="public/readme/banner.svg" alt="My Assistant banner" width="100%" />
+<img src="public/readme/banner.svg" alt="My Assistant" width="100%" />
 
 # My Assistant
 
-**A personal, multi-provider AI toolkit for everyday writing and dev workflows.**
+### A focused workspace for AI-assisted writing, planning, and everyday development tasks.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=0a0a0a)](https://react.dev)
+[![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Gemini](https://img.shields.io/badge/Google-Gemini-4285F4?logo=googlegemini&logoColor=white)](https://ai.google.dev)
-[![Groq](https://img.shields.io/badge/Groq-LLM-F55036?logo=groq&logoColor=white)](https://groq.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Google Gemini](https://img.shields.io/badge/AI-Gemini-4285F4?logo=googlegemini&logoColor=white)](https://ai.google.dev)
+[![Groq](https://img.shields.io/badge/AI-Groq-F55036?logo=groq&logoColor=white)](https://groq.com)
 
 </div>
 
 ---
 
-## What is this?
+## Overview
 
-**My Assistant** is a single-user productivity dashboard that wraps several everyday AI tasks — turning raw notes into a daily status update, rewriting rough prompts, refining tone, and generating structured dev tasks — behind one clean, keyboard-friendly UI. It also includes a **Command Center** that acts as an intelligent orchestrator (describe any task, it figures out which tool to use) and a **Chat** page for open-ended, multi-turn conversations. The whole thing is designed to feel like a focused internal tool, not a generic chatbot: pick a card, paste your text, get a formatted result, copy it, move on.
+My Assistant brings a set of practical AI workflows into one personal productivity dashboard. Use focused tools for common writing and planning jobs, or describe a goal in Command Center and let the app route it to a specialist workflow. Chat provides a separate, general-purpose conversation experience.
 
-It talks to **two AI providers** (Google Gemini and Groq) with an automatic primary/backup fallback, so a rate limit or outage on one provider doesn't stop your work.
-
-## ✨ Features
-
-| Tool                      | What it does                                                                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------------- |
-| 📊 **Dashboard**          | At-a-glance usage stats and quick links into every tool                                               |
-| 🧠 **Command Center**     | Intelligent orchestrator — describe any task and it routes to the right specialist tool automatically |
-| 💬 **Chat**               | General-purpose AI conversation — no routing, no templates, just a direct multi-turn chat             |
-| 📋 **Daily Status**       | Converts raw standup notes into your exact reporting format                                           |
-| ✨ **Prompt Rewriter**    | Turns a rough prompt into a clearer, more effective one                                               |
-| ✎ **Text Refiner**        | Rewrites messages in a selectable tone (formal, casual, concise…)                                     |
-| ☑ **Task Generator**      | Turns a loose idea into structured, actionable dev tasks                                              |
-| ⌘ **Command Library**     | Saved shell commands, shortcuts, and snippets, searchable in one place                                |
-| 🔖 **Saved Instructions** | Reusable system prompts/instructions per workflow                                                     |
-| ↺ **History**             | Every generation you've made, with the ability to revisit or copy it again                            |
-| ⚙️ **Settings**           | Choose your primary and backup AI provider/model                                                      |
-
-### Command Center vs Chat
-
-Both are AI-powered chat interfaces, but they serve different purposes:
-
-- **Command Center** — goal-oriented. Describe a task (format my standup, rewrite this prompt, create a ticket) and an orchestrator automatically routes it to the right specialist tool, each with its own tuned system prompt and temperature.
-- **Chat** — conversation-oriented. A direct, persistent multi-turn conversation with no routing or templates. Best for questions, brainstorming, explaining concepts, or anything that doesn't fit a structured workflow.
-
-Other niceties: a `⌘K` command palette for jumping between tools, one-click copy on every result, a mobile nav drawer, and per-tool usage charts on the dashboard.
+The app supports Google Gemini and Groq. Choose a primary model and an optional backup in Settings; the shared generation layer handles retries and provider fallback.
 
 <p align="center">
-  <img src="public/readme/dashboard.png" alt="Dashboard screenshot" width="90%" />
+  <img src="public/readme/dashboard.png" alt="My Assistant dashboard" width="92%" />
 </p>
 
-## 🧠 AI Providers
+## Product areas
 
-Every model below is verified with a real API request (`npm run test:live`), not
-just configured. Latencies are measured medians for a short completion.
+| Area | Purpose |
+| --- | --- |
+| **Dashboard** | View activity, usage, and shortcuts to the tools. |
+| **Command Center** | Route a goal to the right specialist tool, then run that tool's workflow. |
+| **Chat** | Hold persistent, multi-turn conversations with an AI model. |
+| **Daily Status** | Turn rough notes into a clear status update. |
+| **Prompt Rewriter** | Improve the clarity and usefulness of a draft prompt. |
+| **Text Refiner** | Rewrite text in a selected tone or style. |
+| **Task Generator** | Convert an idea or request into structured, actionable tasks. |
+| **Command Library** | Save and search shell commands, shortcuts, and snippets. |
+| **Saved Instructions** | Keep reusable instructions for recurring workflows. |
+| **History** | Revisit and copy previous AI generations. |
+| **Settings** | Configure provider, primary model, and optional backup model. |
+| **Account** | Manage profile and security details, and export or import app data. |
 
-| Provider          | Model                   | ~Latency | $/1M in · out | Role                      |
-| ----------------- | ----------------------- | -------- | ------------- | ------------------------- |
-| **Groq**          | `qwen/qwen3.8-27b`      | 0.14s    | 0.80 · 4.00   | Fastest (preview tier)    |
-| **Groq**          | `openai/gpt-oss-20b`    | 0.6s     | 0.10 · 0.50   | Fast + cheap              |
-| **Groq**          | `openai/gpt-oss-120b`   | 0.7s     | 0.15 · 0.60   | Default backup            |
-| **Google Gemini** | `gemini-3.5-flash-lite` | 1.1s     | 0.30 · 2.50   | Current-gen lite          |
-| **Google Gemini** | `gemini-2.5-flash`      | 1.2s     | 0.30 · 2.50   | Default primary           |
-| **Google Gemini** | `gemini-3.1-flash-lite` | 1.8s     | 0.25 · 1.50   | Cheapest Gemini           |
-| **Google Gemini** | `gemma-4-26b-a4b-it`    | 2.3s     | **free**      | Zero-cost, own quota pool |
+### Command Center and Chat
 
-`gemma-4-26b-a4b-it` has no paid tier at all — it is free of charge on the
-Gemini API, and it draws on its own quota, so it keeps working after the
-Gemini Flash daily cap is spent.
+These experiences serve different workflows:
 
-`qwen/qwen3.8-27b` sits on Groq's preview tier ("evaluation only, may be
-discontinued at short notice"), so it is labelled as preview in Settings and
-is never a default. It is actively maintained — Groq lists it as the successor
-to qwen3.6-27b — and `npm run audit:models` will flag it if that changes.
+- **Command Center** is task-oriented. An orchestration request selects a specialist tool; a second request runs that tool with its own prompt and settings.
+- **Chat** is conversation-oriented. It sends messages directly to the selected model without tool routing or specialist templates.
 
-Set a primary provider/model and an optional backup in **Settings** — if the
-primary call fails, the app automatically retries on the backup.
+The shared interface also includes a command palette, copy actions, responsive navigation, and reusable tool components.
 
-> **Free-tier note:** `gemini-2.5-flash` allows only **20 requests/day** on the
-> Gemini free tier. Past that it returns 429 and the app falls back to Groq.
-> The Groq models have no such daily cap, so make `openai/gpt-oss-120b` your
-> primary in Settings if you hit the limit often.
+## Architecture
 
-### Maintaining the model list
+### Application and AI request flow
 
-Provider model ranges change often, and models disappear without the app
-noticing — a model can still be listed by the provider's API yet return 404 on
-an actual request. These scripts are how the set is kept honest:
-
-```bash
-npm run audit:models       # do the configured models still exist for our keys?
-npm run probe:models       # discover every model the keys serve, and probe each
-npm run probe:reliability  # sample each model N times for pass rate + latency
-npm run probe:quality      # compare real rewrite output across candidates
+```mermaid
+flowchart LR
+    User[User] --> UI[Next.js App Router UI]
+    UI --> Pages[Dashboard, tools, chat, account]
+    Pages --> API[POST /api/generate]
+    API --> Orchestrator[Generation orchestrator]
+    Orchestrator --> Config[Provider and model settings]
+    Orchestrator --> Gemini[Gemini adapter]
+    Orchestrator --> Groq[Groq adapter]
+    Gemini --> Result[Result or normalized AI error]
+    Groq --> Result
+    Result --> API
+    API --> UI
+    UI --> State[User data and draft hooks]
+    State --> Supabase[(Supabase Auth and Postgres)]
+    State --> Cache[User-scoped browser cache]
 ```
 
-### Tests
+All AI tools use the same API route and generation layer. Provider adapters are deliberately thin; retry, timeout, fallback, and callback behavior live in the shared orchestrator so they stay consistent across providers. The API supports standard JSON responses and server-sent event streaming.
 
-```bash
-npm test         # offline: callback contract, fallback, cancellation, timeouts
-npm run test:live  # live: every model, end to end (needs both API keys)
+### Generation lifecycle
+
+```mermaid
+sequenceDiagram
+    participant P as Tool page
+    participant A as /api/generate
+    participant G as Generation layer
+    participant M as Primary model
+    participant B as Backup model
+    P->>A: Prompt, settings, response mode
+    A->>G: Validate and generate
+    G->>M: Request
+    alt Primary succeeds
+        M-->>G: Generated content
+    else Retryable failure
+        M-->>G: Normalized AI error
+        G->>M: Retry once
+        M-->>G: Error
+        opt Backup is configured and eligible
+            G->>B: Fallback request
+            B-->>G: Generated content or error
+        end
+    end
+    G-->>A: Result or stable AI error
+    A-->>P: JSON response or streamed events
 ```
 
-`npm run test:live` checks each model for authentication, request, response
-parsing, streaming and non-streaming, timeouts, cancellation, error
-classification and the callback contract. A model is not considered supported
-until it passes.
+Transient network and server errors are retried once on the same model before eligible fallback. Cancellation stops the request flow. See [`src/lib/ai/generate.ts`](src/lib/ai/generate.ts), [`src/lib/ai/errors.ts`](src/lib/ai/errors.ts), and [`src/lib/ai/callbacks.ts`](src/lib/ai/callbacks.ts) for the behavior and contracts.
 
-## 🛠️ Tech Stack
+### Persistence model
 
-- **Framework:** [Next.js 16](https://nextjs.org) (App Router) + [React 19](https://react.dev)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS v4, [Framer Motion](https://www.framer.com/motion/) for animation
-- **UI primitives:** Radix UI (dialog, switch), [cmdk](https://cmdk.paco.me/) for the command palette, [lucide-react](https://lucide.dev/) icons
-- **AI SDKs:** `@google/genai`, `groq-sdk`
+```mermaid
+flowchart TB
+    Hooks[useUserData and useToolDraft] --> Hydrate[Hydrate after sign-in]
+    Hydrate --> Cloud[(Supabase per-user tables)]
+    Hydrate <--> Local[Scoped localStorage cache]
+    Legacy[Legacy user_data or browser data] --> Import[One-time collection migration]
+    Import --> Cloud
+    Import --> Marker[Migration marker]
+    Cloud --> Export[Versioned account backup]
+    Local --> Export
+```
 
-## 🚀 Getting Started
+Supabase is the cross-device source for signed-in data. A user-scoped local cache supports quick startup and one-time imports from legacy storage. Collection migration markers prevent old browser values from restoring records that were later removed. Database policies restrict each signed-in user to their own rows.
 
-**1. Clone and install**
+## Technology
+
+| Layer | Technologies |
+| --- | --- |
+| Application | Next.js 16 App Router, React 19, TypeScript |
+| Styling and interaction | Tailwind CSS v4, Framer Motion, Radix UI, cmdk, lucide-react |
+| AI providers | Google GenAI SDK, Groq SDK |
+| Authentication and persistence | Supabase JS, Supabase SSR, PostgreSQL |
+| Rich output | react-markdown, remark-gfm, rehype-highlight |
+
+## Getting started
+
+### Requirements
+
+- Node.js compatible with the installed Next.js release
+- npm
+- Gemini and/or Groq API credentials for AI generation
+- A Supabase project for authentication and cloud persistence
+
+### 1. Install dependencies
 
 ```bash
-git clone <your-repo-url>
+git clone <repository-url>
 cd assistant
 npm install
 ```
 
-**2. Add your API keys**
+### 2. Configure environment variables
 
-Create a `.env.local` file in the project root:
+Copy the example file and provide the values for your services:
 
 ```bash
-GEMINI_API_KEY=your_gemini_api_key
-GROQ_API_KEY=your_groq_api_key
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+cp .env.example .env.local
 ```
 
-- Get a free Gemini key from [Google AI Studio](https://aistudio.google.com/apikey)
-- Get a free Groq key from [console.groq.com](https://console.groq.com/keys)
+| Variable | Purpose |
+| --- | --- |
+| `GEMINI_API_KEY` | Server-side credential for Google Gemini. |
+| `GROQ_API_KEY` | Server-side credential for Groq. |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL. |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key used by the client. |
+| `NEXT_PUBLIC_SITE_URL` | Optional site origin for auth links; defaults to the current request origin. |
 
-**3. Set up Supabase accounts and cloud storage**
+Create provider keys in [Google AI Studio](https://aistudio.google.com/apikey) and the [Groq Console](https://console.groq.com/keys). At least one provider key is needed to generate content. Provider model availability changes over time; configure models in Settings and use `npm run audit:models` to check them against your credentials.
 
-1. Create a project at [supabase.com](https://supabase.com/) and copy its Project URL and anon/public API key into `.env.local`.
-2. Open **SQL Editor** in Supabase. For a new project, run [`src/lib/supabase/schema.sql`](src/lib/supabase/schema.sql), then [`src/lib/supabase/2026-10-18-normalize-user-data.sql`](src/lib/supabase/2026-10-18-normalize-user-data.sql). For a project already using `user_data`, first run [`src/lib/supabase/2026-10-18-expand-collections.sql`](src/lib/supabase/2026-10-18-expand-collections.sql) if it has not been applied, then run the normalization migration. The migration creates record-level tables with per-user row-level security and copies existing data without dropping `user_data`.
-3. In **Authentication → URL Configuration**, allow `http://localhost:3000/auth/callback` for local development and add your deployed callback URL after deployment. Set `NEXT_PUBLIC_SITE_URL` to the matching site origin.
-4. Configure email confirmation and password recovery in Supabase Authentication. The app sends confirmation and reset links through Supabase Auth.
+### 3. Configure Supabase
 
-Auth pages are available at `/login`, `/signup`, and `/forgot-password`. Account profile updates live at `/account`; password reset links open `/account/update-password`. Commands, instructions, generations, and conversation messages are stored as individual Supabase rows. Settings and drafts use small user-scoped JSON values. A new account needs no manual seed file: empty collections load safely, and the Command Library adds its starter commands on first visit with stable IDs. Existing browser or legacy cloud data is imported once per collection; migration markers prevent removed records from reappearing. The Account page can export a versioned JSON backup and import it by adding missing records or replacing included sections. Export also includes valid legacy data that has not yet migrated because its tool page has not been opened. Backups contain saved private text, including any credentials saved as instructions, plus the profile name/email. Account passwords and server API keys are not exported. The publishable key is public; row-level security in the SQL schema ensures users can access only their own records. Never put a Supabase secret or service-role key in a `NEXT_PUBLIC_` variable.
+1. Create a project in [Supabase](https://supabase.com/) and add its URL and publishable key to `.env.local`.
+2. In the Supabase SQL Editor, run [`src/lib/supabase/schema.sql`](src/lib/supabase/schema.sql) for the legacy base schema.
+3. If the project already has data in `public.user_data`, run [`src/lib/supabase/2026-10-18-expand-collections.sql`](src/lib/supabase/2026-10-18-expand-collections.sql) when needed. This migration permits the current collection values while preserving existing rows.
+4. Run [`src/lib/supabase/2026-10-18-normalize-user-data.sql`](src/lib/supabase/2026-10-18-normalize-user-data.sql). It creates normalized tables, enables per-user row-level security, and copies existing records without dropping the legacy table.
+5. In **Authentication → URL Configuration**, allow `http://localhost:3000/auth/callback`. Add the deployed callback URL after deployment and set `NEXT_PUBLIC_SITE_URL` to the site origin.
+6. Configure email confirmation and password recovery in Supabase Authentication.
 
-**4. Run it**
+The app provides `/login`, `/signup`, and `/forgot-password`. Profile and security controls are on `/account`; password recovery links open `/account/update-password`.
+
+### 4. Start the development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — that's it.
+Open [http://localhost:3000](http://localhost:3000).
 
-## ☁️ Deploy for free (access it from anywhere)
+## Data and security
 
-This app deploys to [Vercel](https://vercel.com) in a couple of clicks — free tier, automatic HTTPS, and a public URL you can open from your phone or any device:
+- Saved commands, instructions, generation history, conversation messages, settings, and drafts use the persistence hooks in [`src/lib/hooks/useUserData.ts`](src/lib/hooks/useUserData.ts) and [`src/lib/hooks/useToolDraft.ts`](src/lib/hooks/useToolDraft.ts).
+- The Account page can create and restore versioned JSON backups. A backup can contain private saved text, including credentials a user chose to store in instructions, as well as profile information. It does not contain account passwords or server-side provider API keys.
+- Prompts and generated output are sent to the selected AI provider to complete a request.
+- Provider API keys must remain in server-side environment variables. Never expose a Supabase secret or service-role key through a `NEXT_PUBLIC_` variable.
 
-1. Push this repo to GitHub.
-2. Import it at [vercel.com/new](https://vercel.com/new).
-3. Add `GEMINI_API_KEY` and `GROQ_API_KEY` as environment variables in the project settings.
-4. Add the Supabase environment values above and allow the production `/auth/callback` URL in Supabase Authentication.
-5. Deploy — Vercel builds and hosts it automatically on every push.
+## Development commands
 
-## 📁 Project Structure
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the local development server. |
+| `npm run build` | Create a production build. |
+| `npm run start` | Serve the production build. |
+| `npm run lint` | Run ESLint. |
+| `npm test` | Run offline tests with mocked providers. |
+| `npm run test:live` | Exercise configured models with real provider calls. |
+| `npm run audit:models` | Check whether configured model IDs respond with the configured keys. |
+| `npm run probe:models` | Discover and probe models available to configured keys. |
+| `npm run probe:reliability` | Measure repeated request pass rates and latency. |
+| `npm run probe:quality` | Compare output quality across model candidates. |
 
-```
+> **Live-call notice:** `test:live` and all `probe:*` / `audit:models` commands make real, potentially metered provider requests. They require the relevant API keys. `npm test` is offline.
+
+## Deployment
+
+Deploy the app to a hosting platform that supports the installed Next.js version. Set the server-side provider keys and Supabase environment values in the host configuration, then add the production `/auth/callback` URL in Supabase Authentication. Set `NEXT_PUBLIC_SITE_URL` to the public site origin. Review the hosting provider's current runtime and environment-variable guidance before deploying.
+
+## Repository map
+
+```text
 src/
-├── app/
-│   ├── login/, signup/, forgot-password/, account/ # Authentication and account pages
-│   ├── chat/             # Normal Chat — general-purpose multi-turn AI conversation
-│   ├── command-center/   # Command Center — orchestrator that routes to specialist tools
-│   ├── daily-status/
-│   ├── prompt-rewriter/
-│   ├── text-refiner/
-│   ├── task-generator/
-│   ├── command-library/
-│   ├── saved-instructions/
-│   ├── history/
-│   ├── settings/
-│   └── api/generate/     # Single shared API route for all AI calls (streaming + non-streaming)
+├── app/                    Routes, tool pages, auth screens, and API handlers
+│   ├── api/generate/       Shared JSON and streaming generation endpoint
+│   ├── command-center/     Tool-routing workflow
+│   ├── prompt-rewriter/    Prompt improvement workflow
+│   ├── text-refiner/       Tone and style refinement workflow
+│   └── task-generator/     Structured task generation workflow
 ├── components/
-│   ├── layout/           # Sidebar, mobile nav, command palette, page shell
-│   ├── tools/            # Cards, panels, charts used across tool pages
-│   └── ui/               # Buttons, badges, textarea, skeletons — shared primitives
+│   ├── auth/               Account, sign-in, and data-management UI
+│   ├── layout/             App shell, navigation, and command palette
+│   ├── tools/              Shared components for AI workflows
+│   └── ui/                 Reusable interface primitives
 ├── lib/
-│   ├── ai/               # Provider clients (Gemini, Groq), model config, generation logic
-│   ├── hooks/            # Cloud-backed hooks with browser cache and one-time import
-│   └── supabase/         # Auth clients, session refresh, and database schema
-└── types/                # Shared TypeScript types
+│   ├── ai/                 Orchestration, errors, callbacks, and provider adapters
+│   ├── hooks/              User data, drafts, and persistence behavior
+│   └── supabase/           Client setup, middleware, schema, and migrations
+└── types/                  Shared TypeScript types
 ```
 
-## 🔒 Privacy
+## License
 
-Saved app data is stored in your Supabase project and protected by per-user row-level security. A browser localStorage copy supports fast startup and imports existing data once; Supabase is the shared source across devices. Prompts and generated output are also sent to the selected AI provider to fulfill requests. Gemini and Groq API keys stay on the server in environment variables.
+This repository is a personal productivity project. Add a license file if you plan to distribute or reuse it under specific terms.
 
 ---
 
 <div align="center">
-<sub>Built as a personal productivity tool — not a ChatGPT clone.</sub>
+<sub>Built for focused, repeatable AI workflows.</sub>
 </div>

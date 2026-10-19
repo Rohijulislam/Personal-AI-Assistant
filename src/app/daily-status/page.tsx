@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useToolDraft } from "@/lib/hooks/useToolDraft";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,10 +55,12 @@ Output structure:
 - Always include "Impediment: none" between the last "Worked on" block and "Planned for" when both are present.
 
 Text cleanup rules:
-- Fix obvious typos, capitalisation, and grammar in the items.
+- Correct every spelling mistake in the items, including common typos and word confusions.
+- Fix capitalisation, punctuation, and grammar without changing the intended meaning.
 - Keep task IDs (e.g. T47193, D4090) exactly as-is.
 - Keep "(Continue)" annotations exactly as-is.
 - Keep parenthetical class/file names exactly as-is.
+- Do not treat technical identifiers, class names, file names, or code symbols as misspellings.
 - Preserve the em dash (—) in task titles.
 - Each bullet must start with " - " (one space, dash, one space).
 - Do not add or remove bullet points — keep the same number of items the user gave you.`;

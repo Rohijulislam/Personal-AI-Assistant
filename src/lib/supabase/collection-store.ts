@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DataCollection } from "@/lib/data-transfer";
 
 type JsonRecord = Record<string, unknown>;
-type ListCollection = "command-library" | "saved-instructions" | "usage-log" | "chat-history" | "command-center-history";
+type ListCollection = "command-library" | "saved-instructions" | "usage-log" | "chat-history" | "command-center-history" | "personal-tasks";
 
 const TABLES: Record<ListCollection, string> = {
   "command-library": "saved_commands",
@@ -10,6 +10,7 @@ const TABLES: Record<ListCollection, string> = {
   "usage-log": "generation_history",
   "chat-history": "conversation_messages",
   "command-center-history": "conversation_messages",
+  "personal-tasks": "personal_tasks",
 };
 
 function record(value: unknown): JsonRecord {
@@ -52,6 +53,11 @@ function rowToItem(collection: ListCollection, row: JsonRecord): JsonRecord {
     id: row.id, toolId: row.tool_id, provider: row.provider, model: row.model,
     prompt: row.prompt, text: row.output, createdAt: row.created_at,
   };
+  if (collection === "personal-tasks") return {
+    id: row.id, title: row.title, description: row.description, priority: row.priority,
+    dueDate: row.due_date, dueTime: row.due_time ? String(row.due_time).slice(0, 5) : null,
+    createdAt: row.created_at, updatedAt: row.updated_at, completedAt: row.completed_at,
+  };
   return record(row.payload);
 }
 
@@ -69,6 +75,11 @@ function itemToRow(collection: ListCollection, userId: string, item: JsonRecord,
   if (collection === "usage-log") return {
     user_id: userId, id: item.id, tool_id: item.toolId, provider: item.provider,
     model: item.model, prompt: item.prompt, output: item.text, created_at: item.createdAt,
+  };
+  if (collection === "personal-tasks") return {
+    user_id: userId, id: item.id, title: item.title, description: item.description,
+    priority: item.priority, due_date: item.dueDate, due_time: item.dueTime,
+    created_at: item.createdAt, updated_at: item.updatedAt, completed_at: item.completedAt,
   };
   const { streamText: _streamText, ...payload } = item;
   void _streamText;

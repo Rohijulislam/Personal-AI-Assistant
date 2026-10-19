@@ -11,6 +11,7 @@ import { useCommandLibrary } from "@/lib/hooks/useCommandLibrary";
 import { useSavedInstructions } from "@/lib/hooks/useSavedInstructions";
 import { lastNDaysCounts, toolCounts, weekOverWeek, relativeTimeFromNow } from "@/lib/usage-stats";
 import { useAppUI } from "@/components/layout/AppUIProvider";
+import { DashboardTaskPanel } from "@/components/tasks/DashboardTaskPanel";
 import { Menu, Zap, Terminal, BookMarked, TrendingUp, TrendingDown, ArrowRight, ArrowUpRight, BrainCircuit, MessageSquare, Sparkles, Clock3 } from "lucide-react";
 
 function getGreeting(hour: number): string {
@@ -52,6 +53,7 @@ export default function DashboardPage() {
     </header>
     <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-10">
+        <DashboardTaskPanel />
         <section className="relative overflow-hidden rounded-2xl border border-border bg-surface-raised p-6 sm:p-8 lg:p-10">
           <div className="pointer-events-none absolute -right-20 -top-28 h-80 w-80 rounded-full border border-accent/10" aria-hidden="true" />
           <div className="pointer-events-none absolute -right-2 -top-10 h-52 w-52 rounded-full border border-accent/10" aria-hidden="true" />

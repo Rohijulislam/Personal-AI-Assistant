@@ -1,7 +1,7 @@
 import type { NavItem, ToolId } from "@/types";
 
 export const navGroups: { label: string | null; ids: ToolId[] }[] = [
-  { label: null, ids: ["dashboard", "command-center", "chat"] },
+  { label: null, ids: ["dashboard", "tasks", "command-center", "chat"] },
   {
     label: "AI Tools",
     ids: ["daily-status", "prompt-rewriter", "text-refiner", "task-generator"],
@@ -23,6 +23,13 @@ export const navItems: NavItem[] = [
     href: "/dashboard",
     icon: "LayoutDashboard",
     description: "Quick access to all your tools",
+  },
+  {
+    id: "tasks",
+    label: "Personal Tasks",
+    href: "/tasks",
+    icon: "ListChecks",
+    description: "Track what is due and what to do next",
   },
   {
     id: "command-center",

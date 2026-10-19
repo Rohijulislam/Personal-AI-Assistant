@@ -10,6 +10,7 @@ create table if not exists public.user_data (
     'usage-log',
     'chat-history',
     'command-center-history',
+    'personal-tasks',
     'drafts'
   )),
   payload jsonb,
